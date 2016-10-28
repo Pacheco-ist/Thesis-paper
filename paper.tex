@@ -1,0 +1,321 @@
+%%
+%% If you intend to use figures of formats jpg, png or pdf and want the
+%% output to be immediately a pdf file, compile with pdflatex.
+%%
+%% If you want to use eps or ps figures, your output will be a dvi
+%% file that can be converted to ps and pdf formats. In this case you
+%% should compile your document with latex.
+%%
+%%This template is compatible with both methods.
+%%
+
+
+
+
+\documentclass[a4paper]{IEEEtran}
+\usepackage{pdfpages}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[caption=false, ...]{subfig}
+
+\title{{ \normalsize Master Thesis} \\
+	Bluetooth Low Energy Supported Indoor Location}
+\author{
+	Ricardo Martins {\tt ricardo.pachecomartins@gmail.com}
+	Instituto Superior T\'{e}cnico}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+ We are going to analyze the evolution of ethernet through the years up until the carrier ethernet. In order to do so we start from the very beginning of ethernet by presenting the bases of ethernet frames standardized in IEEE802.3 and from there on out we focus more on all the standards that were published in order to improve Virtual Local Area Networks (VLANs). We will show all the progress made in terms of scalability starting in small company VLANs and moving up until the most recent state of carrier ethernet that is capable of dealing with the needs of metro networks. 
+
+\end{abstract}
+
+\section{Introduction}
+\label{sec:introduction}
+Neste paper iremos apresentar todo o estudo que foi feito para mostrar todo o trabalho que começou com a ethernet nos anos 70 e que progrediu até à carrier ethernet.
+
+Para tal começamos por introduzir o que é a ethernet, obtendo assim conhecimentos sobre a base de estudo deste paper e continuamos de seguida apresentando o conceito de virtual local area networks. Voltando à ethernet, seguimos mostrando as evoluções que nela foram feitos para suportar a existência e melhor manipular VLANs, começando nos standards que permitiram suportar as VLANs de pequena dimensão até chegar ao ponto da carrier ethernet que permite a utilização desta tecnologia nas core networks.
+
+Para melhor visualizar a evolução da ethernet até à carrier ethernet iremos olhar para diversos exemplos de como cada um dos standards apresentados se comporta com uma network exemplo.
+ Desta forma será mais compreensível a visualização das suas variações em termos de funcionalidades e iremos também visualizar as contrapartidas de cada um dos standards em função da sua eficiência.
+
+\section{Ethernet}
+\label{sec:Ethernet}
+
+
+
+
+Em 1973 Xerox começou a desenvolver uma rede local de computadores (LAN, Local Area Network) de topologia bus e em 1976 quando foi adicionado carrier sense, foi possível obter uma rede capaz de ligar mais de cem estações de trabalho com um cabo de um quilometro. Esta rede foi chamada de Ethernet e ganhou o seu nome da palavra “lumeniferous ether”\cite{ether} usada para descrever um meio passivo que transportaria ondas electromagnéticas no espaço, particularmente a luz do sol até à Terra.
+
+Em 1980 foi criado um standard para a Ethernet de 10Mbps e a sua segunda versão foi apelidada de Ethernet II em 1982 que serviu de base para o IEEE802.3.
+
+A ethernet  tem como objectivo interligar diferentes equipamentos no âmbito das LANs e
+inclui a camada física e a camada de ligação de dados do modelo Open Systems Interconnection model (OSI model) . A camada de ligação de dados subdivide-se em duas partes, o Media Access Control(MAC) e o Logical Link Control(LLC).
+
+A sub-camada MAC é responsável pelo controlo de acesso ao meio entre várias estações, permite receber e transmitir tramas. Cada estação tem um endereço MAC associado, um valor de 48 bits único que é atribuído pelo fabricante, que permite identificar a fonte e o destinatário das tramas. Através de códigos de redundância cíclica (CRC) consegue identificar erros e tentativas de manipulação nas tramas, sendo que as identificadas serão de seguida descartadas.
+
+A sub-camada LLC  é responsável pela interface com as camadas superiores e pelo controlo de fluxo e de erros.
+
+
+\section{Trama Ethernet}
+\label{sec:Trama Ethernet}
+
+A formata da trama Ethernet foi introduzido pelo IEEE802.3 já mencionado e apesar de todas as evoluções que foram inventadas para a Ethernet, o seu formatado permanece inalterado.
+
+Composta por diversos parâmetros tem um tamanho variável entre os 84 bytes e os 1538 bytes como é possível verificar pela imagem~\ref{fig:EtherFrame}.
+
+
+
+\textbf{Preâmbulo:} sequência de 7 bytes que permite a sincronização do receptor, pois este opera em modo burst.
+
+\textbf{Start of Frame (SFD):}  Padrão de 8 bits (10101011) que indica o início da trama.
+
+\textbf{Endereço de destino e endereço de fonte:} Endereços MAC, ambos com comprimento de 6 bytes.
+
+\textbf{Comprimento/Tipo:}  sequência de 2 bytes que indica o comprimento, ou o tipo do campo de dados. Estes 2 bytes permitem a representação em base 10 dos valores 0 a 65535 e é em função deste valor que o significado deste campo se altera. Caso esteja entre 0 e 1500, então o  valor representa o comprimento do campo de dados e caso o valor seja maior que 1536 este campo apresenta o tipo da trama.
+
+\textbf{Dados:} Campo reservado para guardar toda a informação útil a ser transmitida. Este campo tem como tamanho mínimo 46 bytes podendo chegar até aos 1500. Na realidade o tamanho mínimo de informação que pode ser transmitido é de 40 bytes, sendo que os restantes 6 bytes necessários para obter o valor mínimo deste campo serão preenchidos com padding a zero.
+
+\textbf{Frame Check Sequence (FCS)}: Conjunto de 4 bytes que contem o valor do CRC calculado sobre todos os bits da trama com excepção do preâmbulo e SFD. O CRC tem como objetivo permitir ao receptor garantir que a informação da trama não foi alterada durante a sua transmissão. 
+
+A trama apresentada tem um comprimento que difere em 12 bytes do valor apresentado no início do capítulo, esta diferença deve-se ao facto que um switch tem que esperar uma quantidade igual ao período de transmissão de 96 bits (12 bytes). Assim sendo este período de tempo depende da velocidade de transmissão.
+
+\section{Virtual LAN}
+\label{sec:Virtual LAN}
+ 
+ 
+ \begin{figure*}
+ 	\centering
+ 	\includegraphics[width=0.75\textwidth,height=6cm]{./VLAN_ex}
+ 	\caption{Exemplo de rede para IEEE802.1Q}
+ 	\label{fig:VLANex}
+ \end{figure*}
+ 
+Uma LAN virtual (VLAN) consiste no agrupamento lógico de vários nós (dispositivos de rede), sobre uma determinada topologia física, de modo a criar a nível lógico uma nova rede com todas as funcionalidades de uma LAN. Desta forma os administradores de rede têm a capacidade de criar divisórias nas suas redes que concretizem as necessidades funcionais e de segurança sem haver necessidade de adicionar mais cabos ou efectuar mudanças na infraestructura da rede.
+A criação de VLANs traz consigo um número de vantagens como por exemplo:
+
+\textbf{Broadcast Control:} Broadcasts são necessários para o normal funcionamento de uma rede e muitos protocolos e aplicações depende deste mecanismo para funcionar. Para redes de grande dimensão este processo pode consumir muitos recursos. Ao segmentar uma LAN de grande dimensão em pequenas VLANs é possível reduzir o tráfico de broadcast visto que cada uma das mensagens de broadcast passam a ser enviadas apenas para os membros da VLAN na qual se encontra quem a enviou. Cada grupo passa a ter a sua própria spanning tree e define um domínio de difusão.
+
+\textbf{Segurança :} VLANs permitem aumentar a segurança e privacidade da rede ao separar o tráfego pertencente a diferentes organizações/departamentos. Num ambiente de rede VLAN, com múltiplos broadcast domains, os administradores de redes têm a capacidade de controlar cada porto e utilizador. Desta maneira deixa de ser possível que um utilizador malicioso apenas se ligue a um porto de switch para visualizar o tráfego da rede. 
+
+\textbf{Transparência da camada física :} Facilita a gestão da rede na medida que permite ao administrador da rede organizar os utilizadores em grupos de modo a reflectir a estrutura da organização (departamentos, edifícios, etc.), de modo independente da topologia física
+
+\textbf{Custo: }Segmentar um VLAN de grande dimensão em VLANs de menor dimensão é mais barato que criar uma rede com routers, visto que caso geral, routers são mais caros que switches 
+
+
+Uma VLAN pode ser de três tipos diferentes: 
+
+\textbf{Port-based VLAN:} Uma VLAN fica associada a um porto de um switch. Desta forma cada estação ligada a este porto passa automaticamente a pertence à VLAN associada.
+
+\textbf{MAC Address-based VLAN:} As VLANs agregam as estações de acordo com o endereço MAC. Esta relação é introduzida via software pelo administrador de rede. Desta forma um estação pode pertencer a diferentes VLANs.
+
+\textbf{Network Address-based VLAN:} O agrupamento de estações numa VLAN é realizado através da informação contida no endereço do cabeçalho da camada de rede. Para este tipo de VLANs os switches têm que ser capazes de processar os cabeçalhos da camada 3, ou apenas opta-se por utilizar routers.
+
+Para garantir o funcionamento de uma rede com switches, cada um deles tem que ser capaz de localizar as estações através da tabela de encaminhamento e de conhecer a VLAN a que pertencem o destinatário e a fonte de cada mensagem. Para redes de grande dimensão as tabelas de encaminhamento de cada switch tornam-se problemáticas, piorando o desempenho da rede. 
+Houve assim necessidade de etiquetar as tramas de acordo com a VLAN, solução apresentada com o standard IEEE802.1Q, descrito no capitulo~\ref{sec:802.1Q}. 
+
+
+\section{Standard IEEE802.1Q}
+\label{sec:802.1Q}
+
+O standard mais simples para fornecer uma Ethernet Virtual Private LAN (E-LAN), “Multipoint-to-Multipoint”, é o IEEE802.1Q. Este standard permite criar VLANs numa estructura LAN, permitindo empresas controlar e separar trafego entre diferentes departamentos.
+Para obter estas funcionalidades é necessário adicionar um parâmetro às tramas utilizadas (visualizadas no capitulo ~\ref{sec:Trama Ethernet}), uma etiqueta (tag) de 4 octetos, denominada Q-tag.
+
+Para tal é necessário adicionar uma etiqueta (tag) de 4 octetos , designada por etiqueta - Q (Q tag), a seguir ao campo de endereço fonte da trama 802.3. Vamos então analisar a trama utilizada neste standard, apresentada na imagem ~\ref{fig:TramaQ}.
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=1\columnwidth]{./802_1Q}
+	\caption{Trama utilizada no IEEE802.1Q}
+	\label{fig:TramaQ}
+\end{figure}
+
+\textbf{Identificador do protocolo VLAN:} Valor de 16 bits utilizado para identificar o protocolo VLAN. Para  IEEE802.1Q trama com Q-tag o valor é 0x8100.
+
+\textbf{Prioridade (PCP, Priority control point):} Campo de 3 bits que definem o nível de prioridade da trama. Este valor é utilizado para dar prioridades diferentes a certo tipos de data (voice,video,etc.)
+
+\textbf{Identificador de formato canónico (CFI) :} Campo de 1 bit utilizado para o propósito de compatibilidade entre ethernet (valor 0)  e token ring (valor 1). Este campo já não é mais utilizado.
+
+\textbf{Identificador VLAN:} campo de 12 bits que especifica a VLAN à qual a trama pertence.
+
+Este standard está limitado em termos de escalabilidade pelo parâmetro identificador VLAN, visto que é composto somente por 12 bits. Assim sendo só é possível ter 4094 VLAN diferentes pois os valores 0x000, que indica que um frame não tem VLAN ID, e 0xFFF, reservado para implementação, não podem ser utilizados.
+Devido a esta limitação este standard pode funcionar nas restrições de uma só organização, mas rapidamente se torna obsoleto quando os “Service Providers” têm como objetivo distribuir serviços ethernet para múltiplos end-users numa infrastructura de rede partilhada.
+
+Tendo analisado o standard IEEE802.1Q podemos então analisar o seu funcionamento em função da imagem ~\ref{fig:VLANex}.
+
+ Tendo analisado o standard podemos então visualizar o seu funcionamento através da figura x.
+ 
+ Estamos então perante um cenário onde há três VLANs diferentes, distribuídas aleatoriamente na rede. Para cada uma das VLANs há um exemplo de transmissão de informação, representado com as setas de cores, que demonstra como é feita a comunicação entre estações na mesma VLAN. 
+ 
+ Vamos então seguir o exemplo de uma mensagem da VLAN1 representada pela cor verde. Neste caso uma estação na VLAN1 mais à esquerda decide enviar uma mensagem para toda as restantes estações da sua VLAN e para tal envia uma mensagem broadcast. A mensagem para as estações dentro da sua “nuvem” estão já recebidas e falta só chegar a todas as restantes na rede, para tal, a mensagem segue até ao seu switch associado S1 e este irá reencaminhar a mensagem para o resto da rede. O standard IEEE802.1Q garantiu que será o switch S1 a realizar o Q-tagging, isto é, inserir a tag 1 (cor verde) na trama enviada, como pode ser visto na representação da trama na figura X. A trama é encaminhada para o switch principal que segundo a sua tabela de encaminhamento irá transmitir a trama para todos os switches que tenham a VLAN1 nos seus portos, ou seja os switches S3 e S4. Quando a mensagem chega aos switches S3 e S4, eles retiram a tag e reencaminham a mensagem para as estações da VLAN1 que eles conhecem.
+
+ \begin{figure*}
+ 	\centering
+ 	\includegraphics[width=0.75\textwidth,height=6cm]{./ad_ex}
+ 	\caption{Exemplo de rede para IEEE802.1ad}
+ 	\label{fig:adex}
+ \end{figure*}
+
+\section{Standard IEEE802.1ad}
+\label{sec:802.1ad}
+
+Devido às limitações nas capacidades de escalonamento criou-se o standard IEEE802.1ad, também conhecido como "QinQ". Para analisar as inovações apresentadas em comparação com o seu standard antecessor, IEEE802.1Q, basta olhar para a figura ~\ref{fig:trama_ad}. 
+
+Como é possível visualizar na figura, a grande diferença entre os standards foi a adição de uma segunda “Q-TAG” (campo apresentado no capitulo ~\ref{sec:802.1Q} com o IEEE802.1Q) entre o customer tag e o endereço de origem e a distinção entre os dois agora existentes. O antigo campo de 4 bytes ficou conhecido como o Customer Tag e o novo campo como Service Tag.
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=1\columnwidth]{./trama_ad}
+	\caption{Trama utilizada no IEEE802.1ad}
+	\label{fig:trama_ad}
+\end{figure}
+
+Este ID, Service tag, é utilizado para identificar o serviço na rede fornecedora, enquanto que o VLAN ID do cliente, designado como C-tag, permanece intacto e não é alterado pelo fornecedor do serviço. 
+Isto permite ao C-tag ser transparente na rede. Os Provider Bridges utilizam o S-tag para identificar a que serviço as frames de um cliente pertencem, logo, cada serviço requer um S-tag distinto. Este standard foi criado por algumas razões importantes:
+
+\textbf{Aumento do limite de VLANs}: Este standard apresenta uma frame com duas tags passando a ter uma limitação teórica de 4096x4096=16777216 LAN’s, permitindo um acomodamento maior da rede. 
+
+\textbf{Compatibilidade:} compatível com o seu antecessor (802.1q) e, embora seja limitado a duas tags, não existe um tecto máximo no standard que limite um frame a mais do que duas tags, permitindo um crescimento no protocolo.É mais fácil para os fabricantes de equipamento de redes modificar o equipamento já existente criando múltiplos cabeçalhos 802.1q do que modificar o equipamento para implementar alguma hipotética extensão do cabeçalho da VLAN ID que não seja do formato 802.1q.
+
+Contudo este standard não corrigiu todas as limitações existentes apresentadas no capitulo XX.
+
+Continua a não haver separação entre as MAC addresses do fornecedor e do cliente, o que leva a que possa haver um problema de segurança, uma vez que a informação do seu endereçamento está visível fora do domínio de segurança da rede. 
+Outra das limitações é que cada switch tem de saber todos os “MAC addresses”, o que implica que cada switch Provider Bridge deverá ter capacidade para suportar centenas de milhares de endereços, o que vai introduzir problemas de escalabilidade. Um exemplo representativo deste problema é no caso em que queremos adicionar um novo utilizador à rede, sendo que tem que ser memorizado pelos switches do fornecedor caso contrário, quando ocorrer uma falha na rede do consumidor, a ação tomada pelo Spanning Tree Protocol (STP) pode afectar a rede do consumidor. Os "downtimes" da rede em caso de falham continuam dependentes da execução completa da STP, mantendo assim as limitações que não permitem que a ethernet seja utilizada nas redes metropolitanas.
+
+Podemos então passar a visualizar a figura ~\ref{fig:adex} de modo a perceber em termos funcionais o que foi alterado. Começamos por denotar que existem dois tipos diferentes de switches, os customer bridges (CB), switches que utilizam o IEEE802.1Q e os Provider bridges (PB), que funcionam com o IEEE802.1ad agora exemplificado. 
+
+Um edge switch, nome atribuído aos switches que estão na fronteira, isto é, comunicam com customer bridges, tem a funcionalidade de inserir e remover a service tag das tramas que por eles passam, ou seja, ao receber uma trama vinda de um CB é inserida uma S-tag correspondente ao serviço associado à trama. De seguida a trama será reencaminhada dentro desta nuvem que engloba os PBs todos, chegando a um switch VLAN-aware. Esta característica usada para descrever certos switches, indicam que o switch em causa conhece toda a rede e é capaz de reencaminhar correctamente a trama para o seu destino. Ao chegar de novo a um edge switch, o mesmo irá retirar a S-tag da trama e reencaminhar para o CB adjacente.
+
+
+\section{Standard IEEE802.1ah}
+\label{sec:802.1ah}
+
+O IEEE802.1ah, denominado de Provider Backbone Bridges (PBB) ou MAC-in-MAC, sucessor do standard apresentado no último capitulo evoluiu a ethernet ao adicionar endereços MAC dedicados para os service providers.  Pelo figura ~\ref{fig:trama_ah} é possível visualisar todas as alterações que foram feitas com este standard:
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=1\columnwidth]{./ah_trama}
+	\caption{Trama utilizada no IEEE802.1ah}
+	\label{fig:trama_ah}
+\end{figure}
+
+\textbf{endereço de destino backbone}: campo de 6 bytes que contem o endereço MAC do switch PBB destino;
+
+\textbf{endereço de fonte backbone}: campo de 6 bytes que contem o endereço MAC do switch PBB fonte;
+
+\textbf{identificador de VLAN backbone( B-VID):} campo de 2 bytes utilizado para identificar o indentificador de VLAN atribuido à trama
+
+\textbf{identificador de serviço:} campo de 3 bytes utilizador para indicar o serviço da trama
+
+Todas estas adições no formato da trama permitiram ao IEEE802.1ah:
+
+Oferecer a completa separação entre os MAC addresses do fornecedor e do cliente;
+Não impõr qualquer alteração ao processo de switching da Ethernet nas pontes fundamentais;
+Proporcionar uma clara separação entre o domínio do consumidor e do fornecedor;
+Deduzir os MAC addresses do consumidor apenas através dos Backbone Edge Bridges;
+Suportar até 16 milhões de VLAN’s (campo service-id de 24 bits).
+
+Contudo, este standard também tem desvantagens, e uma das mais evidentes é o facto das redes PBB continuarem a utilizar o Spanning Tree Protocol para eliminar malhas fechadas.
+
+
+\section{Standard IEEE802.1ag}
+\label{sec:802.1ag}
+
+o standard IEEE802.1ag, uma actualização significativa do IEEE802.1ah, será o último a ser apresentado pois foi com ele que se obteve a chamada carrier ethernet. Baseado na trama utilizada pelo IEEE802.1ah e sem necessidade de adição de novos campos apresentou um número elevado de inovações que permitiu finalmente que a ethernet fosse utilizada como uma opção viável nas redes metropolitanas.
+
+\textbf{Engenharia de tráfego:} tomando vantagem do facto que ao desligar algumas das funcionalidades, o hardware existente ethernet é capaz de ter um novo comportamento de reencaminhamento, ou seja, é capaz de realizar um reencaminhamento de ligação orientada.
+
+Os ethernet switches baseiam-se nos 60 bits , endereço MAC (48 bits) mais o identificador VLAN (12bits), para reencaminhar mensagens, sendo que os dois parâmetros são únicos globalmente. Visto que  o identificador VLAN é utilizado para identificar um domínio sem loops no qual os endereços MAC são "flooded", se optarmos por configurar rotas sem loops com endereços MAC, o identificador VLAN é libertado das suas funções. Assim sendo no IEEE802.1ag este parâmetro é utilizado para identificar rotas específicas na rede para um dado endereço MAC destino.
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=1\columnwidth]{./te_ag}
+	\caption{Visualização da engenharia de tráfego}
+	\label{fig:te_ag}
+\end{figure}
+
+Este standard permite que certos endereços tenham as suas tabelas de encaminhamento preenchidas pelo plano de controlo em vez de ser pela utilização do STP. O funcionamento de cada switch mantem-se intacto, a diferença é que já não há necessidade de mecanismos de aprendizagem, resultando em rotas predeterminadas pela rede e um comportamento totalmente previsível da rede sobre qualquer circunstância.
+A figura ~\ref{fig:te_ag} permite visualizar a engenharia de tráfego aplicada à rede no sentido em que é visível duas rotas para o mesmo endereço MAC de destino, o working path que representa o caminho habitualmente utilizado e o Protection Path (indicado por um identificador VLAN diferente) que é utilizado em caso de falha da rota principal. Esta implementação permitiu reduzir drasticamente o tempo de baixa da rede para situações de falha de rota, visto que ao invés de ser necessário esperar pelo STP bastanta reencaminhar o tráfego pelo working path.
+
+\textbf{Operações, administração e gestão (OAM):} Funcionalidades OAM estão bem definidas nas redes TDM e são um factor importante para garantir que as operadoras pode oferecer serviços de qualidade "carrier". Os OAMs estão divididos em duas áreas, gestão de falha e monitorização de performance ,vamos então ver o que o IEEE802.1ag melhorou nestes campos:
+
+\textbf{Gestão de falha:}Garante que quando ocorre uma falha na rede, o problema é encaminhado para o operador que depois toma a decisão mais correcta. Está divida em três partes:
+
+\textbf{deteção de falha:} Mensagens de verificação contínua (continuous check messages (CCMs)) são enviadas pela fonte para o destino em intervalos fixos de tempos. Se uma resposta não for recebido dentro de um período específico de tempo (normalmente 3 vezes o intervalo de envio), anuncia-se uma falha na rede. O limite de tempo imposto para recuperação da rede nas redes metropolitanas é de 50ms, este valor era impossível de obter com o STP. Com as CCMs ao definir o intervalo de envio em valores inferior ao limite, é possível detectar uma falha em menos de 50ms.
+
+\textbf{verificação da falha:} Mensagens de loopback (LBM) e respostas loopback (LBR) permitem descobrir se uma determinada rota funciona. Normalmente utilizadas após a criação de uma rota ou quando se detecta um falha, para verificar que ela ocorre entre dois endpoints.
+
+\textbf{isolação de falha:} Mensagens de link trace (LTM) e respostas link trace (LTR) permitem descobrir qual a ligação de uma certa rota que falhou. Ao enviar esta mensagem (LBM) numa determinada rota que contem uma falha, todos os switches que a receberem devem responder com uma LBR, deste modo é possível identificar a partir de que switch a mensagem parou de ser encaminhada, identificando a ligação partida.
+
+\textbf{Monitorização de performance:} As tramas têm diferentes níveis de performance visto que num serviço podem sofrer de delays devido a congestionamento, ou mesmo perdas de tramas. Serviços de vídeo e de voz são os mais susceptíveis  aos efeitos de latência e jitter. Assim sendo as redes de carrier ethernet requerem monotorização de performance avançadas de modo a ajudar os provedores de serviço a cumprir os requerimentos da rede. 
+
+\textbf{rácio de tramas perdidas:} Conhecido como Frame loss ratio, é calculado usando CCMs e contadores. Cada um dos endpoints envia um certo número de CCMs e conta quantas é que foram recebidas. No fim os contadores são trocados para calcular a percentagem de tramas perdidas.
+
+\textbf{atrasos nas tramas:} Mensagens são enviadas com os tempos de envio. O switch destino pode então calcular o tempo que a trama demorou até ser recebida. Só funciona se ambos os switches tiverem os relógios sincronizados.
+
+\textbf{ variação dos atrasos nas tramas:} Mesmo conceito que o apresentado anteriormente excepto que são armazenados os valores dos delays de modo a ver a sua variação.
+  
+
+ 
+\section{Comparação de eficiência}
+\label{sec:eficiencia}
+
+Até este ponto foram analisados todos os standard criados para a obtenção da carrier ethernet e os benefícios que apresentaram sem nunca ter focado nas contra-partidas. Com cada um destes standards houve necessidade de inserir mais informação na trama, aumentando a carga que tem que ser transportada com cada mensagem. Iremos então analisar os efeitos de cada standard na eficiência. 
+
+A eficiência de um standard depende da seguinte fórmula: 
+
+\begin{equation}
+	\label{eq:problem}
+	 \text {Eficiencia} = \frac{\text{tamanho  da informação útil}}{ \text{tamanho da trama}} \\ 
+\end{equation}\\
+
+Relembramos que a informação tem um valor variável entre 40 e 1500 bytes , como visto na secção XXX e que o tamanho da trama varia de standard para standard.
+Como ponto de partida para todas estas inovações estava a ethernet e portanto iremos analisar a sua eficiência como base de comparação. 
+
+A trama ethernet apresentada na figura ~\ref{fig:EtherFrame} tem necessidade de 38 bytes de overhead que são sempre adicionados à data. Assim sendo podemos visualizar a variação da sua eficiência na figure ~\ref{fig:ef_802.3}.
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=1\columnwidth]{./ef_802_3}
+	\caption{ eficiência do IEEE802.1Q}
+	\label{fig:ef_802.3}
+\end{figure}
+
+Para os standards analisados neste paper, as suas eficiências são comparadas na figura ~\ref{fig:ef_all}.
+O standard IEEE802.1Q está representado com a cor azul e é o mais eficiente em comparação aos restantes devido a só ter sido adicionado um campo de 4 bytes na trama, totalizando a um overhead de 42 bytes. De seguida está o IEEE802.1ad com a cor vermelha, standard que adicionou um segundo campo de 4 bytes, para um overhead de tamanho 46 bytes. Por último está o IEEE802.1ah com a cor verde, que apresenta a pior eficiência de todos os standards apresentados devido ao tamanho total do overhead de 67 bytes que impõe às suas tramas.
+
+\begin{figure}[htp]
+	\centering
+	\includegraphics[width=1\columnwidth]{./ef_all}
+	\caption{eficiência do IEEE802.1Q,IEEE802.1ad e IEEE802.1ah}
+	\label{fig:ef_all}
+\end{figure}
+
+\section{Conclusions}
+\label{sec:conclusion}
+
+A ethernet como foi estudada no capítulo ~\ref{sec:Ethernet} tinha vários defeitos que a impediam de ser implementada nas redes metropolitanas. Através de todas as inovações que foram implementas, chegando ao nível apresentado no IEEE802.1ag, já é possível. De momento a ethernet já não está limitada pelos seus problemas de escalabilidades, apresenta altos níveis de segurança e permite obter um rede resiliente capaz de monotorização de performance e gestão de falhas, cumprindo assim os requisitos em termos de OAMs
+
+
+\begin{thebibliography}{9}
+
+\bibitem{ether}
+ \texttt{http://listserv.linguistlist.org/pipermail/ads-l/1999-July/001027.html}
+\bibitem{Carrier}
+ \texttt{Ethernet as a Carrier Grade Technology: Developments and Innovations} Rafael Sánchez,2008
+ \bibitem{slides}
+ \texttt{Slides da unidade curricular- Redes de Telecomunicações- Capitulo 3} João Pires
+ 
+ 
+\end{thebibliography}
+
+\end{document}
+This is never printed 
