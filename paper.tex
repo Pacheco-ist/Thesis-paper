@@ -101,25 +101,26 @@ When looking at what's possible to achieve using the BLE technology there is the
 When utilizing BLE for indoor location the usual metric used to calculate distances is the RSSI. This metric withint the context of bluetooth brings to surface several issues such as the fact that RSSI as a metric is very accurate only when the target is within a meter of the beacon, since the value decreases as the inverse of the square of the distance to the beacon . As such when developing solutions for indoor location that require system with high accuracy capable of tracking moving objects, the usage of RSSI can't be utilized without further work. Faragher et al \cite{bleacc} tackled one of the techniques used to improve BLE system's accuracy, fingerprinting, by verifying the effects caused by the device deployment density within the required location. This experiment also puts into evidence one of the downsides of the bluetooth technology being that its scalability is low, besides requiring higher density in order to increase accuracy, due to their low range any need to increase coverage leads to increased costs.
 
 
-Cricket
-Active Bat
-Radar
-active badge
+-Cricket
+
+
+-Active Bat
+
+
+-Radar
+
+
+-active badge
+
 
 recent stuff
 
+
 In 2011, LifeMap \cite{lifemap} introduced one of the first to attempt to track indoor location with unconstrained phone placement. Not Bluetooth
 
+
+
 Zonith \cite{zonith} introduced a bluetooth based location system with the objective of tracking the position of workers in dangerous environments. Any device registered in the zonith implemented network would be continuously tracked and accounted for in each of the system's functionalities such as, sounding an alarm whenever a lone worker doesn't move or responde within a time interval (Lone worker protection) or providing a quick an precise location of any worker that has requested for help. This system's installation requires planing of the best locations to place the beacons and number required of beacons in order to be able to provide enough courage and make sure the system provides the required quality.
-
-lifemap
-zonith
-
-
-Chen et al. [2010] present an inquiry-based locating approach using Bluetooth
-RSS measurements. There also exist several commercial Bluetooth-based indoor positioning
-systems, such as ZONITH [Teldio 2006], which is used to assist people who
-work in hazardous environments.
 
 
 - BLE Projects
@@ -127,51 +128,125 @@ work in hazardous environments.
 
 - Architecture similar stuff?
 
+
 \section{Implementation}
 \label{sec:struture}
 
 
-The solution presented in this paper was made with the objective of presenting a generic indoor location system using bluetooth low energy. The system's architecture is presented in figure ~\ref{fig:architecture} and is divided three parts: the device, the application and the server. For each of these parts an explanation will be given, containing a description of each of its components specific to the presented system alongside the requirements for each to work.
+The solution presented in this paper was made with the objective of presenting a generic indoor location system using bluetooth low energy. The system's architecture is presented in figure ~\ref{fig:architecture} and is divided three parts: the bluetooth low energy device, in section ~\ref{subsec:beacon} a description of the used technologies and the changes made are present;the server, whose funcionalities and stored information are described in section ~\ref{subsec:server}; and the smartphone application, whose process is described in section ~\ref{subsec:app} alongside figures that show the functional prototype. For each of these parts an explanation will be given, containing a description of each of its components specific to the presented system alongside the requirements for each to work.
 
 \begin{figure}
 	\centering
-		\includegraphics[width=0.5\linewidth]{figures/profile.png}
-	\caption[Gatt-based profile hierarchy]{Gatt-based profile hierarchy}
+		\includegraphics[width=1\linewidth]{figures/Architecture.png}
+	\caption[System's Architecture]{System's Architecture}
 	\label{fig:architecture}
 \end{figure}
 
 \subsection{ BLE beacon}
 \label{subsec:beacon}
 
+The beacons that were utilized are Texas Instruments CC2650STK devices which can be visualized in figure ~\ref{fig:beacon}. Alongside the device, which comes with a pre-installed bluetooth low energy program capable of giving information on each of its ten sensors through its predefined profiles, there is a texas smartphone application that can connect to a single device and read from its sensors. By using the texas Code Composer Studio (CSS), the pre-defined ble profile existant on the device could be altered. Upon further analysis of the profile, a characteristic was found for which the Universal Unique Identifier (UUID) of the service and the characteristic itself was found and as such this was the one that ended up being used to store the device's owner server's address. Since the device was already set to work as a pheripheral and it now stored the information relevant to the system, there was no need to do further work.
+
+\begin{figure}
+	\centering
+		\includegraphics[width=0.5\linewidth]{figures/beacon.jpg}
+	\caption[TI cc2650stk sensortag]{TI cc2650stk sensortag}
+	\label{fig:beacon}
+\end{figure}
+
+
 \subsection{ Server}
-\label{subsec:beacon}
+\label{subsec:server}
+
+The webserver was implement in Python 3 programming language. The program implements a simple tcp server capable of receiving multiple request at the same time. Each request starts with information sent from an application which include a pair of MAC address and associated RSSI value for each ble device that the same application found. Afterwards the list of pairs is filtered in order to remove any existant devices that are not present in the server's database of devices.
+
+Each server has a database that includes only ble devices. An entry (description of a device) in this database is composed by the device's mac address, its longitude and latitude and its building, floor and room name. In addition to the database, a server when initiated can store additional location info such as the server's street, number, zipcode, city and country, allowing this information to be transmited to the client in order to offer an additional level of location description to the user. The whole location specific information can be visualised in figure ~\ref{fig:AppMenu}.
+
+Upon having filtered the initial list of pairs, the Cell of Origin (CoO) technique is applied by verifying which of the devices produced a stronger signal on the receptor. Upon obtaining the closest device an answer is sent to the application containing all of the information associated to the server and the selected device.
+
+
+- Describe the Database ( insert image example of database with a few entries?? )
+
+- Mention capability to Insert aditional info, at the moment it displays geocoding on pop up menu in figure ~\ref{fig:AppMenu}.
+
+
 
 \subsection{ Application}
-\label{subsec:beacon}
+\label{subsec:app}
+
+The Smartphone application was developed for Android using the Android Studio IDE. The Application is divided in two primary functional blocks, the Mock location Provider and the Google Maps Integrated Display, as can be visualized in figure ~\ref{fig:Architecture}.
+
+The Mock Location Provider is implemenented if it was a Location provider, such as gps. The application functions works as a listener to a Location provider, in this case it listens to the Mock Provider that was implemented. By implementing the whole process of obtaining a location inside a service (the mock provider) , a new level of abstraction is added to the application. As such, whenever the application is signaled to obtain the user's current location, a request is made to the associated location provider and the application only need to listen for the answer that eventualy arrives.
+
+The Mock Location Provider incorporates the first three steps present in figure ~\ref{fig:MockProvider}, which will now be explored individualy. The first step indicates the gathering of information of the surroundings of the user's device. When a request is made to the provider, a scan for nearby bluetooth low energy devices is made which will put the smartphone in a state of listening for incoming ble advertisement packets for half a second ( NEED TO VERIFY VALUE AND JUSTIFY, THERE WAS A PAPER ON THIS). During this scanning period, each time a device is found, the advertisement is registered in a list, which have a duplication prevention mechanism implemented. Once the period is over, the provider has avaliable a list of all the ble devices within range.   
+
+The second step involves taking the created list of devices, obtain a server adress and forward the same list to it. Once the first step is completed, the provider will analyze each entry at a time. For each device the provider will attempt to respond to the caught advertisement packet, resulting in a created connection.  Once the connection is created the provider asks for the available services of the paired device. Upon receiving an answer, the list of services is swoop while looking for the service with the wanted UUID. If the device doesn't have the UUID that the provider is looking for, it can assume that the paired ble is not a beacon of our system, as such the connection is terminated. When the provider identifies that the device has the system's UUID, it requests the device to provide the service's existant characteristics. The provider will receive a list composed of the service's characteristics and it will search in it for the system's characteristics UUID, the one which contains the device's server's address. This search has the objective of confirming that the service existant in this device is indeed the one that was implemented for the system and not a device with another service that happened to have the same UUID. For any service outside those that are documented in the Bluetooth Special Interest Group (SIG), who have a specific UUID attached to them, the UUID is generated randomly and as such there is a small chance of collision. Once the wanted characteristic is found, the provider requests the device to read its value and stores the received value in a list. This list will contain the servers of the devices that were found, and for each address there will be a list corresponding to each device , and their corresponding rssi values, from the same owner. In order to quicken the previously described process, the provider keeps in cache the most recent contacted devices. Before attempting a connection, the provider confirms that the device isn't found in cache and when finishing a process, the associated device is inserted into the cache.
+
+When every device has been contacted, a voting system is actioned which will decide from the list of servers which one it will send the collected information to. The voting system uses an exponential function in order to attribute a weight to each server. INSERT FUNCTION AND EXPLAINATION.
+
+The voting system was implemented with the objective providing a thin security layer by allowing multiple devices of the same server to overcome a single attacker's device which happened to be close to the user. After obtaining each server's values, the one with the highest value is chosen and sent the list with all the devices. 
+
+The Third step... CONTINUE
+
+-Explain step two: Ask each of found devices for their Owner; Explain the whole Communication process ( create image with the message process?? ) The process would be, connect -> request services -> Find wanted service -> Request Characteristics -> Find Characteristic wanted -> Read Value; Mention Cache properties available to speed up this step; Server Calculation of which to Contact ( the 2^X formula used to obtain most valuable, Voting system).
+
+- Explain step three:  TCP communcation; Formulate The message and send; Obtain Answer -> Gather Aditional Info (that which is used in PopUp menu) -> Return a Location to the APP
 
 
 
-- Overview of Architecture
+One of the current limitations of the android API that deals with BLE is that the interface on the smartphone that is used to connect with a device has a fixed timeout time.  MIGHT JUST NEED TO BE IMPROVED
 
-- Location Provider
-	- BLE Search
-	- GATT Comunication
-	- Server Calculation
-	- Voting System  and CoO
 
-- Google Maps
-	- Indoor maps 
-	- Map insertion possibility
+\begin{figure}
+	\centering
+		\includegraphics[width=0.5\linewidth]{figures/RequestLocation.png}
+	\caption[Mock Location Provider Workflow]{Mock Location Provider Workflow}
+	\label{fig:MockProvider}
+\end{figure}
 
-Images:
-	- Architecture Overview
-	- Location Provider Diagram
-	- App Screen
+
+
+- Google Map Integration:
+
+- Explain Set four: We use the Mock Location Provider obtained Location to focalise the camera, insert location marker and update PopUp Menu
+
+- Possible: Study Google Maps Possibility of load our own maps ( i believe it's possible, need to check api), this would explain scalability Map wise.
+
+
+
+- The Final result is the following two images, figure ~\ref{fig:AppFocus} and figure ~\ref{fig:AppMenu}.
+
+\begin{figure}
+	\centering
+		\includegraphics[width=0.5\linewidth]{figures/app_focused.png}
+	\caption[Application screen showing a focused location on a room]{Application screen showing a focused location on a room}
+	\label{fig:AppFocus}
+\end{figure}
+
+\begin{figure}
+	\centering
+		\includegraphics[width=0.5\linewidth]{figures/app_focused_menu.png}
+	\caption[Application screen showing additional information of location]{Application screen showing additional information of location}
+	\label{fig:AppMenu}
+\end{figure}
+
+
+
 
 
 
 \section{Performance Analysis}
 \label{sec:performance}
+
+- Energy Consumption in general
+
+- Energy consumption vs Cycle time vs Accuracy?
+
+- Location Accuracy
+
+- Time for request completion
+
+- Data Requiremnts?
  
 
 
@@ -179,6 +254,9 @@ Images:
 \section{Future Work}
 \label{sec:future}
 
+- Possible Improvement: Paralel ble connections; Improvements on lateration algorithm;  Rest depends on the Performance results
+
+- Conclusions
 
 
 
@@ -213,7 +291,7 @@ Images:
 \texttt{Yohan Chon and Hojung Cha; LifeMap: A SmartphoneBased Context Provider for Location-Based Services; https://pdfs.semanticscholar.org/cb50/e7344494f8b8fdfeba160f814cbfe3ce3356.pdf}
 
 \bibitem{zonith}
-\texttt{http://media.teldio.com/pdfs/Teldio_Indoor%20Positioning%20White%20Paper_v2.1a.pdf}
+\texttt{http://media.teldio.com/pdfs/Teldio_Indoor}
 
  
  
