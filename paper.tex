@@ -23,6 +23,11 @@
 \usepackage{subcaption}
 \usepackage[caption=false, ...]{subfig}
 
+Generic and extensible indoor location services
+
+Multimodal indoor location service/framework
+
+
 \title{{ \normalsize Master Thesis} \\
 	Bluetooth Low Energy Supported Indoor Location}
 \author{
@@ -42,23 +47,39 @@
 \section{Introduction}
 \label{sec:Introduction}
 
-Indoor positioning systems have greatly evolved in the past few years due to the great success of its counter-part, the global positioning system (GPS), in outdoor environments but failure to reproduce the same results in indoor environments. Since GPS is an outdoor position systems and is based on a network of satelite, when the required scenario for position tracking is inside a building, new constraints are presented onto the process such as the attenuation and reflection of eletromagnetic waves upon collision with building walls and obstacles \cite{surveygps}. As such there was a need to find reliable indoor systems that by nature would already be able to heavily reduce the impact of some of the mentioned constraints.
+Indoor positioning systems have greatly evolved in the past few years due to the great success of its counter-part, the global positioning system (GPS), in outdoor environments but failure to reproduce the same results in indoor environments. Since GPS is an outdoor position systems and is based on a network of satelite, when the required scenario for position tracking is inside a building, new constraints are presented onto the process such as the attenuation and reflection of eletromagnetic waves upon collision with building walls and obstacles \cite{survey1}. As such there was a need to find reliable indoor systems that by nature would already be able to heavily reduce the impact of some of the mentioned constraints.
 
-In order to understand indoor position there is a need to understand the full scope of variables that come to surface when moving from outdoor to indoor. When developing a system there is a need to make sure that it can tackle the chalenges such as small space dimension which reforce the need for higher precision, a higher probability of non existent line of sight, influence of obstacles such as walls, furniture, moveable objects such as doors and human beings\cite{reviewtechniques}. All of the previously mentioned affect the way electromagnetic waves propagate in an indoor environment leading to problems related to severe multipath and reflection on existent surfaces \cite{surveywireless}. Besides propagation challenges, there are energy consumption, accuracy and deployment costs that play a critical role in deciding the viability of a proposed indoor location technique.
+In order to understand indoor position there is a need to understand the full scope of variables that come to surface when moving from outdoor to indoor. When developing an indoor system there is a need to make sure that it can tackle the chalenges such as small space dimension which reforce the need for higher precision, a higher probability of non existent line of sight, influence of obstacles such as walls, furniture, moveable objects such as doors and human beings\cite{reviewtechniques}. All of the previously mentioned affect the way electromagnetic waves propagate in an indoor environment leading to problems related to severe multipath and reflection on existent surfaces \cite{surveywireless}. Besides propagation challenges, there are energy consumption, accuracy and deployment costs that play a critical role in deciding the viability of a proposed indoor location technique.
 
 With the evolution of mobile devices there has been a sizeable number of different technologies that can possibly be used in indoor locationing \cite{surveywireless,survey2,survey1} such as GPS-based technologies, using high sensitivity antenas to overcome GPS's indoor issues, RFID , Wireless LAN and Bluetooth among others, allowing even for hibrid systems which make use of more than one of the technologies mentioned above. 
 
 Another important aspect besides the chosen technology is the location detection technique which are widely varied in terms of accuracy and complexity. The simplest available category would be proximity detection which has Cell of Origin (CoO) as its most famous technique, allowing for room-based detection by assuming that the mobile target is at the cell with the strongest receiving power. This technique is widely used by system using RFID, Bluetooth and Infrared. The next category would be triangulation which uses the geometric properties of the triangle to obtain a position. The method utilized to obtain the values used in the position's calculation can be angle-based, which have implementation costs are their worst limitation; time-based, using Time-of-flight (ToF) or Round Trip Time (RTT) to obtain measures of distance from beacons; signal property based, using received signal strength indicator (RSSI) as a metric, altough it's only possible of using this metric with radio signals; dead reckoning, which calculates the actual position utilizing the last determined position and incrementing based on estimate of the device's speed.
 
-The solution in this paper is based on the Bluetooth Low energy technology using the CoO method to obtain the device's location and as such for what technologies and location methods are concerned, only the used ones will be focused. 
+When taking into consideration every possible technology and existant algorithm that are capable of being applied on indoor location, we find ourselves with a wide variaty of solutions. This high number of variations has led to an increase on the number of existing surveys which attemp to gather make a collection of what has been achieved in the field. Looking at this opportunity I saw the possibility of attempting to create a generic platform capable of being utilized by any existing indoor location system. In order to implement and test the solution there was a need to decide on which technology to be used and as such I opted by the bluetooth low energy.
 
-In this paper is structured in a way that in \ref{sec:related} an overview of Bluetooth low energy (BLE) and existent projects and their associated architecture are presented while shedding light on the benefits and limitations of the chosen technologies, in \ref{sec:structure} the proposed system is described based on technology and method used as well as the architecture of the would system, \ref{sec:performance} analyzes the different aspects of the presented solution in terms of energetic efficiency, accuracy and response timings, finalizing in \ref{sec:future} by overviewing what could be carried out in order to further develop the existing work and by concluding the paper.
+In this paper is structured in a way that in \ref{sec:related} an overview of Bluetooth low energy (BLE) and existent projects and their associated architecture are presented while shedding light on the benefits and limitations of the chosen technologies. Section \ref{sec:architecture} overviews the architecture of the proposed generic system, while section \ref{sec:structure} presents the finalized system by analyzing the utilized technologies. Section \ref{sec:performance} analyzes the different aspects of the presented solution in terms of energetic efficiency, accuracy and response timings, finalizing in section \ref{sec:future} by overviewing what could be carried out in order to further develop the existing work and by concluding the paper.
 
 
-- Falta de framework, não tenho bases, vale a pena mencionar na introdução?
 
 \section{Related Word}
 \label{sec:related}
+
+Indoor location systems is a field that has only been researched for a few couple of years but from the very begining until now there has been a very large amount of changes. In order to understand the progresses made there is a need to dwell into the systems which functioned as bases for progress. 
+
+In 1992 the Active system \cite{badge} was presented as an infrared solution which was capable of provided room-based position tracking, due to  infrared signals being unable to to travel through walls, and whose's information was then stored in a centralized location database \cite{badge1}. This system imposed users to carry with them an ID card equiped with an IR LED which emitted a signal each fifteen seconds. The long signal frequency was due to the chance of collision of signals from multiple users in the same location while also having in mind energy cost which need to be kept as low as possible. One of the downsides was the decrease in accuracy as the user's location is only known at best to a 15-second window. The user's location was obtained  through the implementation of a network of sensors which act as receivers and then forward the obtained information to the master station which would take care of polling the sensors, processing data and then making it available to users. One of the biggest issues that were raised with this system was the privacy concerns raised by the clients due to its object tracking nature.
+
+At the beggining of the twentieth century, two remarkable projects were presented, Bat system \cite{bat} and RADAR\cite{radar}. The first one, Bat Ultrasonic Location System, was a system capable of tracking various objects, each with a small wireless device called bat \cite{bat1, bat2}. A bat consisted of a radio transmitter, each had a unique identifier and was ment to be carried by personnel or attached to objects. In order to locate a bat, there was a base station which periodically transmitted a signal with a single identifier which caused the corresponding bat to emmit an ultrasound pulse. The same pulse was then captured by an existing grid of receivers, which were placed on the ceiling of the areas to be covered, which recorded the time of arrival of the ultrasound. Since the receivers are also capable of receiving the initial base station's message they are capable of computing the ultrasound's time of flight, which is then forwarded to the base station for further computation. Since the speed of sound in the air is known, the system was capable of converting the time of flight of the ultrasound and convert it into bat-receiver distance. In order to obtain the bat's location, if at least three receivers had caught the bat's signal, it was possible to utilize multilateration to obtain its 3D position. Due to the nature of the system, only one bat can be localised at a time, as such the process was diveded into time slots which garanteed that each time slot had enough time to obtain a bat's position and for its emitted signals to die out.
+
+The Radar system is a RF-based system to locate and track users inside buildings. The system is devided into two phases, an offline phase used for data collection and a real-time phase where a location is obtained. For data collection the mobile application and the base stations are synchronized, in order to be able to obtain time stamps and then the mobile user periodically emits UDP packets to the base stations (BS) . Each BS records the RF signal strength measurement together with the time stamp. This information gathering happens in both offline and real-time phases. During only the offline phase, while the mobile user emits packets, it also indicates his position on the map through (x,y) coordinates together with the timestamp. The real-time phase utilises the real-time user's packet associated RF signal strength, which is obtained at each bs and later on forwarded to the central computer where the computation is made, and examinates it in order to find the best fit for the current transmitter position.
+
+The last remarkable project, Cricket, was introduced in 2005 and managed to tackled some of the problems presented in the last mentioned systems \cite{cricket1}. Each node in the cricket system is composed of a RF transceiver and hardware capable of generating and receiving ultrasonic signals. There are two types of nodes, beacons, which are fixed reference points and are attached to the ceiling or walls of the building, and listeners which are attached to the objects that need to be tracked. Each beacon periodically transmits a RF signal message containing beacon specific information, such as unique ID and beacon position. Whenever a RF signal is transmitted, an ultrasonic pulse is also emitted which enables listeners to measure their distance to the beacons by using the time difference of arrival times of the RF and ultrasonic signals. Each listener utilizes the RF signal's beacon information alongside the obtain distances to beacons to compute their space position and orientation. Crickets Architecture allowed to solve the user pribacy, decentralized and ease of deployment issues there were present in the remaining projects \cite{cricket}.
+
+
+
+
+TODO recent stuff
+
+
 
 Bluetooth is a wireless technology that was created in 1994 with the objective of replacing cables connecting fixed or portable devices. At this point in time Bluetooth Special Interest Group is in charge of developing and managing this technology characterized by its robustness, low energy consuption and low cost. The Bluetooth Low Energy protocol was introduced with the Bluetooth Core Specification version 4 (also called Bluetooth Smart) circa 2010 alongside two other protocols.  Out of the three, BLE standed out for its lower power consuption, lower complexity and lower cost, while allowing for  device discovery, connection establishment and connection mechanisms. 
 
@@ -70,6 +91,55 @@ The BLE radio operates at the 2.4GHz band and employs a frequency hopping transc
 	\caption[Bluetooth Low Energy Architecture]{Bluetooth low energy architecture}
 	\label{fig:BLEarchitecture}
 \end{figure}
+
+
+
+When looking at what's possible to achieve using the BLE technology there is the example of Apple's creation iBeacon \cite{ibeacon} which was presented in 2013 with the porpuse of implementing proximity sensing systems. The device is capable of playing on the broadcaster role and as such its objective is to send nearby compatible receivers certain information. Some examples of application are to track customers or trigger location-based actions on devices such as push notifications or checking in on social media, with pratical cases such as the usage of iBeacons by McDonalds to offer special offers to their customers in their fast-food stores. An indoor location system utilizing this technology was presented by Jingjing Yang et al \cite{ibeacon1}, where these devices were used to indicate a pacient of his whereabouts through the proximity sensing proprieties and this information was later transfered over to a server in order to give clients a variaty of different services, from pacient counting, to nearby department's information and offer indoor guidance to the nearest available bed. 
+
+When utilizing BLE for indoor location the usual metric used to calculate distances is the RSSI. This metric withint the context of bluetooth brings to surface several issues such as the fact that RSSI as a metric is very accurate only when the target is within a meter of the beacon, since the value decreases as the inverse of the square of the distance to the beacon . As such when developing solutions for indoor location that require system with high accuracy capable of tracking moving objects, the usage of RSSI can't be utilized without further work. Faragher et al \cite{bleacc} tackled one of the techniques used to improve BLE system's accuracy, fingerprinting, by verifying the effects caused by the device deployment density within the required location. This experiment also puts into evidence one of the downsides of the bluetooth technology being that its scalability is low, besides requiring higher density in order to increase accuracy, due to their low range any need to increase coverage leads to increased costs.
+
+
+Zonith \cite{zonith} introduced a bluetooth based location system with the objective of tracking the position of workers in dangerous environments. Any device registered in the zonith implemented network would be continuously tracked and accounted for in each of the system's functionalities such as, sounding an alarm whenever a lone worker doesn't move or responde within a time interval (Lone worker protection) or providing a quick an precise location of any worker that has requested for help. This system's installation requires planing of the best locations to place the beacons and number required of beacons in order to be able to provide enough courage and make sure the system provides the required quality.
+
+
+\section{Architecture}
+\label{sec:architecture}
+
+The solution presented in this paper was made with the objective of creating a generic indoor location system capable of being implemented using any existant indoor system created. The generic system's architecture is presented in figure ~\ref{fig:generic} and it's divided in 4 parts: beacon, location server, map server and smartphone application. 
+
+\begin{figure}
+	\centering
+		\includegraphics[width=1\linewidth]{figures/generic.png}
+	\caption[Generic System's Architecture]{Generic System's Architecture}
+	\label{fig:generic}
+\end{figure}
+
+The beacon represents any form of hardware responsible for providing fixed reference points which are fundamental in calculating a user's position. A beacon needs to be be composed of two structural blocks: The Unique ID, which stores any information crucial to identifying a beacon, and the Hardware specific software component, which contains all the necessary software to accomplish communication with a certain technology. 
+
+The location server is divided in three: the Communication block, which is responsible for creating, managing and terminating a connection with the mobile application; the location algorithm, architectural block responsible for applying a certain location algorithm to the data received from the application in conjuntion with the server's device information in order to obtain a concrete location; and the beacon manager which functions as a database where all the beacon associated with the server are stored.
+
+The map server represents the architectural block responsible for providing the maps associated to the location of user obtained through the location service on the application. As such it requires a communication block which needs to be capable of communication with the map service of the application and takes care of creating, managing and terminating connections, and a map manager which stores the existing maps that are to be transfered to the application.
+
+The smartphone application is divided into three functional blocks: core application, location service and map service. The core application contains the core functionality of the application and is in charge of communicating with the existing services. Communication with the location service allows for requesting the user's location which is then forwarded to the map service, in order to obtain the associated map. The location service is composed by four blocks: the API component through which it communicates with the core of the application; the tag reader which is the functional block responsible for reading a certain type of tags (beacons) and as such its structure will depend on the type of beacon utilized by the service; the tag decoder, functional block responsible of utilizing the information obtained through the tag reader and process it in order to be forwarded to communication block; the communication block which takes care of the creating, managing and terminating connections with a location server.
+
+It might be relevant to analyze some types of indoor location system that could diverge from this architecture, such as camera or Quick Response (QR) code-based systems. These systems would still follow the proposed architecture except for the beacon component which would not be existant and the location service's tag reader block wouldn't need any sort of communication since it would be responsible of utilizing the camera to capture either a fotograph or reading a QR core.
+
+
+\begin{figure}
+	\centering
+		\includegraphics[width=0.75\linewidth]{figures/altgeneric.png}
+	\caption[Adjustments to the application required for multiple indoor location systems]{Adjustments to the application required for multiple indoor location systems}
+	\label{fig:altgeneric}
+\end{figure}
+
+Although figure \ref{fig:generic} is representative of a system utilizing a single type of technology, the presented solution is scalable, allowing for insertion of additional indoor location systems onto a single architecture. The changes required for implementing such a scenario would be to add one extra layer of complexity on the android application as present on figure \ref{fig:altgeneric}. In this new architecture, the application's core would only communicate with the location manager and the latter would now be responsible of managing through all of the location services and request execution of whichever service would be more suited or available. The location manager would also be required to manage through the existant map services, which may or may not be in same number as the existant location services, and make sure that the data obtained from a certain location service is forwarded to the correct map service which must capable of processing it.
+
+\section{Implementation}
+\label{sec:struture}
+
+
+\subsection{Bluetooth Low energy}
+\label{ble}
 
 When looking at the BLE's architecture , which can be seen at \ref{fig:BLEarchitecture}, the Generic Access Profile (GAP) is one of the most relevant since it's responsible for working in conjunction with Generic Attribute (GATT) to define the base funcionality of BLE devices. The services that are made available by the GAP are: BLE device discovery, connection modes, security, authentication, association models and service discovery.
 In addiction to this, it also defines four different roles to describe a device, allowing for the controllers to be optimized in funtion of the device's desired roles: 
@@ -96,51 +166,13 @@ A profile is composed by one or more services. A service is a collection of data
 A Characteristic is a value that is used in a service that has properties and configuration information that descrive how the value should be accessed as well as information on how to display the value. A characteristic is defined by its declaration, its properties, its value and may also be defined by its descriptor, which describes the value or permit configuration of the server relative to the value.
 
 
-When looking at what's possible to achieve using the BLE technology there is the example of Apple's creation iBeacon which was presented in 2013 with the porpuse of implementing proximity sensing systems. The device is capable of playing on the broadcaster role and as such its objective is to send nearby compatible receivers certain information. Some examples of application are to track customers or trigger location-based actions on devices such as push notifications or checking in on social media, with pratical cases such as the usage of iBeacons by McDonalds to offer special offers to their customers in their fast-food stores. An indoor location system utilizing this technology was presented by Jingjing Yang et al \cite{ibeacon}, where these devices were used to indicate a pacient of his whereabouts through the proximity sensing proprieties and this information was later transfered over to a server in order to give clients a variaty of different services, from pacient counting, to nearby department's information and offer indoor guidance to the nearest available bed. 
-
-When utilizing BLE for indoor location the usual metric used to calculate distances is the RSSI. This metric withint the context of bluetooth brings to surface several issues such as the fact that RSSI as a metric is very accurate only when the target is within a meter of the beacon, since the value decreases as the inverse of the square of the distance to the beacon . As such when developing solutions for indoor location that require system with high accuracy capable of tracking moving objects, the usage of RSSI can't be utilized without further work. Faragher et al \cite{bleacc} tackled one of the techniques used to improve BLE system's accuracy, fingerprinting, by verifying the effects caused by the device deployment density within the required location. This experiment also puts into evidence one of the downsides of the bluetooth technology being that its scalability is low, besides requiring higher density in order to increase accuracy, due to their low range any need to increase coverage leads to increased costs.
-
-TODO Existante work
-
--Cricket
-
-
--Active Bat
-
-
--Radar
-
-
--active badge
-
-
-recent stuff
-
-
-In 2011, LifeMap \cite{lifemap} introduced one of the first to attempt to track indoor location with unconstrained phone placement. Not Bluetooth
-
-
-
-Zonith \cite{zonith} introduced a bluetooth based location system with the objective of tracking the position of workers in dangerous environments. Any device registered in the zonith implemented network would be continuously tracked and accounted for in each of the system's functionalities such as, sounding an alarm whenever a lone worker doesn't move or responde within a time interval (Lone worker protection) or providing a quick an precise location of any worker that has requested for help. This system's installation requires planing of the best locations to place the beacons and number required of beacons in order to be able to provide enough courage and make sure the system provides the required quality.
-
-
-- BLE Projects
-	
-
-- Architecture similar stuff?
-
-
-\section{Implementation}
-\label{sec:struture}
-
-
-The solution presented in this paper was made with the objective of presenting a generic indoor location system using bluetooth low energy. The system's architecture is presented in figure ~\ref{fig:architecture} and is divided three parts: the bluetooth low energy device, in section ~\ref{subsec:beacon} a description of the used technologies and the changes made are present;the server, whose funcionalities and stored information are described in section ~\ref{subsec:server}; and the smartphone application, whose process is described in section ~\ref{subsec:app} alongside figures that show the functional prototype. For each of these parts an explanation will be given, containing a description of each of its components specific to the presented system alongside the requirements for each to work.
+The implementation presented in this paper was created by utilizing the generic indoor location system presented in section \ref{sec:architecture} and applying it with bluetooth low energy. The system's architecture is presented in figure ~\ref{fig:implementation} and is divided three parts: the bluetooth low energy device, in section ~\ref{subsec:beacon} a description of the used technologies and the changes made are present;the server, whose funcionalities and stored information are described in section ~\ref{subsec:server}; and the smartphone application, whose process is described in section ~\ref{subsec:app} alongside figures that show the functional prototype. For each of these parts an explanation will be given, containing a description of each of its components specific to the presented system alongside the requirements for each to work.
 
 \begin{figure}
 	\centering
-		\includegraphics[width=1\linewidth]{figures/Architecture.png}
+		\includegraphics[width=1\linewidth]{figures/System.png}
 	\caption[System's Architecture]{System's Architecture}
-	\label{fig:architecture}
+	\label{fig:implementation}
 \end{figure}
 
 \subsection{ BLE beacon}
@@ -175,7 +207,7 @@ Upon having filtered the initial list of pairs, the Cell of Origin (CoO) techniq
 \subsection{ Application}
 \label{subsec:app}
 
-The Smartphone application was developed for Android using the Android Studio IDE. The Application is divided in two primary functional blocks, the Mock location Provider and the Google Maps Integrated Display, as can be visualized in figure ~\ref{fig:Architecture}.
+The Smartphone application was developed for Android using the Android Studio IDE. The Application is divided in two primary functional blocks, the Mock location Provider and the Google Maps Integrated Display, as can be visualized in figure ~\ref{fig:implementation}.
 
 The Mock Location Provider is implemenented as if it was a Location provider, such as gps. The application functions works as a listener to a Location provider, in this case it listens to the Mock Provider that was implemented. By implementing the whole process of obtaining a location inside a service (the mock provider) , a new level of abstraction is added to the application. As such, whenever the application is signaled to obtain the user's current location, a request is made to the associated location provider and the application only need to listen for the answer that eventualy arrives.
 
@@ -255,10 +287,6 @@ The final state of the implemented system can be visualized in figure ~\ref{fig:
 
 
 \begin{thebibliography}{9}
-
-\bibitem{surveygps}
- \texttt{Hakan Koyuncu, Shuang Hua Yang ;A Survey of Indoor Positioning and Object Locating Systems http://paper.ijcsns.org/07_book/201005/20100518.pdf}
-
 \bibitem{surveywireless}
  \texttt{Hui Liu; Survey of Wireless Indoor Positioning Techniques and Systems http://www.pitt.edu/~dtipper/2011/Survey1.pdf} 
 
@@ -271,10 +299,16 @@ The final state of the implemented system can be visualized in figure ~\ref{fig:
 \bibitem{survey1}
  \texttt{Jiang Xiao, Zimu Zhou,Youwen Yi and Lionel M. Ni; A Survey on Wireless Indoor Localization from the Device Perspective; http://www.tik.ee.ethz.ch/~zzhou/paper/csur16-xiao.pdf}
 
+\bibitem{survey3}
+\texttt{Klaithem Nuaimi and Hesham Kamel; A survey of indoor positioning systems and algorithms; https://www.researchgate.net/publication/224242434_A_survey_of_indoor_positioning_systems_and_algorithms}
+
 \bibitem{blecore}
 \texttt{ }
 
 \bibitem{ibeacon}
+\texttt{ibeacon insider: what's ibeacon; http://www.ibeacon.com/what-is-ibeacon-a-guide-to-beacons/}
+
+\bibitem{ibeacon1}
 \texttt{ Jingjing Yang, Zhihui Wang and Xiao Zhang ;An iBeacon-based Indoor Positioning Systems for Hospitals; http://www.sersc.org/journals/IJSH/vol9_no7_2015/16.pdf}
 
 \bibitem{bleacc}
@@ -285,6 +319,36 @@ The final state of the implemented system can be visualized in figure ~\ref{fig:
 
 \bibitem{zonith}
 \texttt{http://media.teldio.com/pdfs/Teldio_Indoor}
+
+\bibitem{badge}
+\texttt{The Active Badge System; http://www.cl.cam.ac.uk/research/dtg/attarchive/ab.html}
+
+\bibitem{badge1}
+\texttt{WANT, R., HOPPER, A., FALCAO, V., AND GIBBONS, J.;The Active Badge Location System;  http://www.cl.cam.ac.uk/research/dtg/www/publications/public/files/tr.92.1.pdf}
+
+\bibitem{bat}
+\texttt{ The Bat Ultrasonic Location System ;http://www.cl.cam.ac.uk/research/dtg/attarchive/bat/ }
+
+\bibitem{bat1}
+\texttt{Andy Harter, Andy Hopper, Pete Steggles, Andy Ward and Paul Webster;The Anatomy of a Context-Aware Application; http://www.cl.cam.ac.uk/research/dtg/lce-pub/public/files/tr.2002.2.pdf }
+
+\bibitem{bat2}
+\texttt{ Andy Ward, Alan Jones and Andy Hopper; A New Location Technique for the Active Office; http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.49.1301&rep=rep1&type=pdf}
+
+\bibitem{radar}
+\texttt{Microsoft research: radar; https://www.microsoft.com/en-us/research/project/radar/}
+
+\bibitem{radar1}
+\texttt{P. Bahl and V. N. Padmanabhan; RADAR: An in-building RF-based user
+location and tracking system; http://morse.colorado.edu/~timxb/5520/ho/BahlRADAR.pdf}
+
+\bibitem{cricket}
+\texttt{Nissanka Bodhi Priyantha; The Cricket Indoor Location System;http://ahvaz.ist.unomaha.edu/azad/temp/sac/05-priyantha-localization-sensor-networks-coverage-thesis-good.pdf}
+
+\bibitem{cricket1}
+\texttt{Nissanka B. Priyantha, Anit Chakraborty, and Hari Balakrishnan; The Cricket Location-Support System; http://www.cse.wustl.edu/~lu/cse521s/Papers/cricket.pdf}
+
+
 
  
  
