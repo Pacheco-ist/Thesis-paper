@@ -23,10 +23,6 @@
 \usepackage{subcaption}
 \usepackage[caption=false, ...]{subfig}
 
-Generic and extensible indoor location services
-
-Multimodal indoor location service/framework
-
 
 \title{{ \normalsize Master Thesis} \\
 	Bluetooth Low Energy Supported Indoor Location}
@@ -75,11 +71,7 @@ The Radar system is a RF-based system to locate and track users inside buildings
 The last remarkable project, Cricket, was introduced in 2005 and managed to tackled some of the problems presented in the last mentioned systems \cite{cricket1}. Each node in the cricket system is composed of a RF transceiver and hardware capable of generating and receiving ultrasonic signals. There are two types of nodes, beacons, which are fixed reference points and are attached to the ceiling or walls of the building, and listeners which are attached to the objects that need to be tracked. Each beacon periodically transmits a RF signal message containing beacon specific information, such as unique ID and beacon position. Whenever a RF signal is transmitted, an ultrasonic pulse is also emitted which enables listeners to measure their distance to the beacons by using the time difference of arrival times of the RF and ultrasonic signals. Each listener utilizes the RF signal's beacon information alongside the obtain distances to beacons to compute their space position and orientation. Crickets Architecture allowed to solve the user pribacy, decentralized and ease of deployment issues there were present in the remaining projects \cite{cricket}.
 
 
-
-
-TODO recent stuff
-
-
+%TODO recent stuff
 
 Bluetooth is a wireless technology that was created in 1994 with the objective of replacing cables connecting fixed or portable devices. At this point in time Bluetooth Special Interest Group is in charge of developing and managing this technology characterized by its robustness, low energy consuption and low cost. The Bluetooth Low Energy protocol was introduced with the Bluetooth Core Specification version 4 (also called Bluetooth Smart) circa 2010 alongside two other protocols.  Out of the three, BLE standed out for its lower power consuption, lower complexity and lower cost, while allowing for  device discovery, connection establishment and connection mechanisms. 
 
@@ -197,9 +189,9 @@ Each server has a database that includes only ble devices. An entry (description
 Upon having filtered the initial list of pairs, the Cell of Origin (CoO) technique is applied by verifying which of the devices produced a stronger signal on the receptor. Upon obtaining the closest device an answer is sent to the application containing all of the information associated to the server and the selected device.
 
 
-- Describe the Database ( insert image example of database with a few entries?? )
+%- Describe the Database ( insert image example of database with a few entries?? )
 
-- Mention capability to Insert aditional info, at the moment it displays geocoding on pop up menu in figure ~\ref{fig:AppMenu}.
+%- Mention capability to Insert aditional info, at the moment it displays geocoding on pop up menu in figure ~\ref{fig:AppMenu}.
 
 
 
@@ -221,7 +213,7 @@ The Mock Location Provider incorporates the first three steps present in figure 
 
 The second step involves taking the created list of devices, obtain a server adress and forward the same list to it. Once the first step is completed, the provider will analyze each entry at a time. For each device the provider will attempt to respond to the caught advertisement packet, resulting in a created connection.  Once the connection is created the provider asks for the available services of the paired device. Upon receiving an answer, the list of services is swoop while looking for the service with the wanted UUID. If the device doesn't have the UUID that the provider is looking for, it can assume that the paired ble is not a beacon of our system, as such the connection is terminated. When the provider identifies that the device has the system's UUID, it requests the device to provide the service's existant characteristics. The provider will receive a list composed of the service's characteristics and it will search in it for the system's characteristics UUID, the one which contains the device's server's address. This search has the objective of confirming that the service existant in this device is indeed the one that was implemented for the system and not a device with another service that happened to have the same UUID. For any service outside those that are documented in the Bluetooth Special Interest Group (SIG), who have a specific UUID attached to them, the UUID is generated randomly and as such there is a small chance of collision. Once the wanted characteristic is found, the provider requests the device to read its value and stores the received value in a list. This list will contain the servers of the devices that were found, and for each address there will be a list corresponding to each device , and their corresponding rssi values, from the same owner. In order to quicken the previously described process, the provider keeps in cache the most recent contacted devices. Before attempting a connection, the provider confirms that the device isn't found in cache and when finishing a process, the associated device is inserted into the cache.
 
-When every device has been contacted, a voting system is actioned which will decide from the list of servers which one it will send the collected information to. The voting system uses an exponential function in order to attribute a weight to each server. INSERT FUNCTION AND EXPLAINATION.
+When every device has been contacted, a voting system is actioned which will decide from the list of servers which one it will send the collected information to. The voting system uses an exponential function in order to attribute a weight to each server. %INSERT FUNCTION AND EXPLAINATION.
 
 The voting system was implemented with the objective providing a thin security layer by allowing multiple devices of the same server to overcome a single attacker's device which happened to be close to the user. After obtaining each server's values, the one with the highest value is chosen and sent the list with all the devices. 
 
