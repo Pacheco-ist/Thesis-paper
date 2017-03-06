@@ -75,7 +75,7 @@ The Idealized generic architecture , which can be seen on figure \ref{fig:generi
 
 % Review
 
-This paper is structured in a way that in \ref{sec:related} an overview of Bluetooth low energy (BLE) and existent projects and their associated architecture are presented while shedding light on the benefits and limitations of the chosen technologies. Section \ref{sec:architecture} overviews the architecture of the proposed generic system, while section \ref{sec:structure} presents the finalized system by analyzing the utilized technologies. Section \ref{sec:performance} analyzes the different aspects of the presented solution in terms of energetic efficiency, accuracy and response timings, finalizing in section \ref{sec:future} by overviewing what could be carried out in order to further develop the existing work and by concluding the paper.
+This paper is structured in a way that in \ref{sec:related} an overview of existent indoor location systems, generic and dedicated, is given, followed by an analyses on the existent location techniques and the ways to decribe a location. Section \ref{sec:architecture} overviews the architecture of the proposed generic system, while section \ref{sec:structure} presents the finalized system by analyzing the utilized technologies. Section \ref{sec:performance} analyzes the different aspects of the presented solution in terms of energetic efficiency, accuracy and response timings, finalizing in section \ref{sec:future} by overviewing what could be carried out in order to further develop the existing work and by concluding the paper.
 
 
 \section{Related Word}
@@ -125,41 +125,33 @@ Zonith \cite{zonith} introduced a bluetooth based location system with the objec
 
 The location of a user can be obtained through several different techniques, each possibility leads to different levels of accuracy and hardware and computacional costs.
 The first technique would be proximity detection which has Cell of Origin (CoO) as its most famous technique and allows for room-based detection by assuming that the mobile target is at the cell with the strongest receiving power. This technique is widely used by system using RFID, Bluetooth and Infrared and has low deployment costs as the number of beacons required is small, at least one per room. 
-
-The following technique would be triangulation which uses the geometric properties of the triangle to obtain a position. The method utilized to obtain the values used in the position's calculation can be angle-based, which have implementation costs are their worst limitation; time-based, using Time-of-flight (ToF) or Round Trip Time (RTT) to obtain measures of distance from beacons; signal property based, using received signal strength indicator (RSSI) as a metric, altough it's only possible of using this metric with radio signals; dead reckoning, which calculates the actual position utilizing the last determined position and incrementing based on estimate of the device's speed.
-Indoor location systems is a field that has only been researched for a few couple of years but from the very begining until now there has been a very large amount of changes. In order to understand the progresses made there is a need to dwell into the systems which functioned as bases for progress. 
+The following technique would be triangulation which uses the geometric properties of the triangle to obtain a position. The metrics utilized to obtain the values used in the position's calculation can be angle-based, which have high implementation costs due to the required antenna's complexity; time-based, using Time-of-flight (ToF) or Round Trip Time (RTT) to obtain measures of distance from beacons; signal property based, using received signal strength indicator (RSSI), altough it's only possible of using this metric with radio signals; dead reckoning, which calculates the actual position utilizing the last determined position and incrementing based on estimate of the device's speed.
 
 \subsection{Location Description}
 \label{subsec:description}
 
-%Descriptions
+In order to better understand the existent ways of describing locations it's better to look at existent solutions and the methods that they utilise. The most common method of describing location is through latitude and longitude, much like the gps does, as the biggest example that makes use of it is Google maps. Google maps, through its indoor maps platforms \cite{googlemaps} allows integration of indoor maps onto their google maps. Since google maps uses this type of location description, the indoor component of it follows the same routes. An indoor map on the platform is inserted onto its original geographical location and in the case of having multiple floors, it is possible to navigate through them.
 
-% Meridian
+Another method is to consider the indoor map as the reference and utilise a cartesion coordinate system, x and y, to represent a location. Meridian, an indoor location system developed by HP \cite{meridian} which presents functionalities such as route making and push notifications through its beacons, makes use of its platform for insertion of the indoor maps. As such there isn't the outdoor component that google indoor maps had,making it possible to use a (x,y) system relative to the building map.
+
+Although Meridian already provides some extra level of detail in comparison with google indoor maps, there is another example that should be mentioned called OpenStreetMaps. Although it started much like google, providing global data, due to its openness, many indoor projects surfaced such as OpenLevelUP \cite{openlevel}. This project makes use of OpenStreetMaps' current indoor tagging scheme \cite{opentagging}, which is intented to describe in the most complete and simple way a building. This makes available the number of floors, the type of elemets (room, wall, corridor, etc) and its connectors, like doors and escalators or elevators, allowing to understand clearly the map that is being analysed.
 
 \section{Architecture}
 \label{sec:architecture}
 
 The solution presented in this paper was made with the objective of creating a generic indoor location system capable of being implemented using any existant indoor system created. The generic system's architecture is presented in figure ~\ref{fig:generic} and it's divided in 4 parts: beacon, location server, map server and smartphone application. 
 
-The beacon represents any form of hardware responsible for providing fixed reference points which are fundamental in calculating a user's position. A beacon needs to be be composed of two structural blocks: The Unique ID, which stores any information crucial to identifying a beacon, and the Hardware specific software component, which contains all the necessary software to accomplish communication with a certain technology. 
+The environment with beacons represents any form of element responsible for providing fixed reference points which are fundamental in calculating a user's position. A beacon needs to be compatible with the usage of a smartphone, i.e. the device's sensors need to be able to capture the data. Using the previously presented technologies as examples, these "beacons" could be in fact BLE beacons , Wi-Fi access points, LED lamps or even something as simple as sound, with the data capturing being made through the smartphone's available antennas, camera or microphone. The beacon represents a position in the indoor environments and as such it needs to be uniquely identified, be it through its characteristics or associated information. In addition to these informations, each beacon needs to have an associated location server and provide information about it to the smartphone application.
 
-The location server is divided in three: the Communication block, which is responsible for creating, managing and terminating a connection with the mobile application; the location algorithm, architectural block responsible for applying a certain location algorithm to the data received from the application in conjuntion with the server's device information in order to obtain a concrete location; and the beacon manager which functions as a database where all the beacon associated with the server are stored.
+The location server is an external component where the information relative to the "beacons" utilised is stored. As such when a location request arrives from the smartphone, the received data can be translated onto physical locations which will later be used to compute the user's location. The algorithm used to obtain such location is entirely dependant on the system's creators. Once the location is obtain, it's sent back to the smartphone in addition to the location of the server where it should retrieve the associated map.
 
-The map server represents the architectural block responsible for providing the maps associated to the location of user obtained through the location service on the application. As such it requires a communication block which needs to be capable of communication with the map service of the application and takes care of creating, managing and terminating connections, and a map manager which stores the existing maps that are to be transfered to the application.
-
-The smartphone application is divided into three functional blocks: core application, location service and map service. The core application contains the core functionality of the application and is in charge of communicating with the existing services. Communication with the location service allows for requesting the user's location which is then forwarded to the map service, in order to obtain the associated map. The location service is composed by four blocks: the API component through which it communicates with the core of the application; the tag reader which is the functional block responsible for reading a certain type of tags (beacons) and as such its structure will depend on the type of beacon utilized by the service; the tag decoder, functional block responsible of utilizing the information obtained through the tag reader and process it in order to be forwarded to communication block; the communication block which takes care of the creating, managing and terminating connections with a location server.
-
-It might be relevant to analyze some types of indoor location system that could diverge from this architecture, such as camera or Quick Response (QR) code-based systems. These systems would still follow the proposed architecture except for the beacon component which would not be existant and the location service's tag reader block wouldn't need any sort of communication since it would be responsible of utilizing the camera to capture either a fotograph or reading a QR core.
+The map server represents the architectural block responsible for providing the maps associated to the location of the user, location which was obtained through the location service on the application. The used map representation is up to the system creater for as long as it is in accordance with the remaining parts of the system. This means that the location provided by the location server needs to be something that is representable on the maps provided and capable of being comprehended by the smartphone application. 
 
 
-\begin{figure}
-	\centering
-		\includegraphics[width=0.75\linewidth]{figures/altgeneric.png}
-	\caption[Adjustments to the application required for multiple indoor location systems]{Adjustments to the application required for multiple indoor location systems}
-	\label{fig:altgeneric}
-\end{figure}
+The smartphone application is the central piece of this architecture. It is responsible of discovering and communicating with the beacons existent in its environment through its sensors. This communication process allows the smartphone to obtain information of its surrounding and to obtain the address of the location server that is associated to the connected beacon, in order to later forward this same information to it. Upon communicating with the location server, the application expects to get back information relative to its positions as well as the address of the map server that is to be contacted. Through that address, the application is capable of obtaining the map relative to its positions and display the result to the user.
 
-Although figure \ref{fig:generic} is representative of a system utilizing a single type of technology, the presented solution is scalable, allowing for insertion of additional indoor location systems onto a single architecture. The changes required for implementing such a scenario would be to add one extra layer of complexity on the android application as present on figure \ref{fig:altgeneric}. In this new architecture, the application's core would only communicate with the location manager and the latter would now be responsible of managing through all of the location services and request execution of whichever service would be more suited or available. The location manager would also be required to manage through the existant map services, which may or may not be in same number as the existant location services, and make sure that the data obtained from a certain location service is forwarded to the correct map service which must capable of processing it.
+The presented architecture was structured in a way that it is scalable and it allowed for interoperability. The idea behind such an architecture would be let different indoor building use their own version of the system but a user with the associated smartphone application would be able to transit between buildings and use the readily available beacons to always obtain its location. This would be achieved through a common architecture that allowed for self-contained implementations that could be access through a generic smartphone application. In order to analyse this assumption it is necessary to look back on the already analysed figure \ref{fig:choices}, which represents the main components of an indoor systems. This architecture is capable of externalizing from the smartphone component all the remaining. By making the smartphone the central piece of communication, the beacons are required to the ones to provide location data. By having a server dedicated to computing the location of an user, the system developers are allowed to use whichever algorithm they wish, since there is no dependency to the application. They are also the only ones responsible for having the beacon associated data, for giving those same beacons the location of its server and for computing a location that is in accordance with how they wish to store their maps on the maps server. The last remaining component is the location description which is completely passed onto the map server and whose only requirement is for it to be in accordance with its associated location server, in terms of location description.
+
 
 \section{Implementation}
 \label{sec:struture}
@@ -197,7 +189,7 @@ The implementation presented in this paper was created by utilizing the generic 
 
 \begin{figure}
 	\centering
-		\includegraphics[width=1\linewidth]{figures/System.png}
+		\includegraphics[width=1\linewidth]{figures/implementation.png}
 	\caption[System's Architecture]{System's Architecture}
 	\label{fig:implementation}
 \end{figure}
@@ -225,12 +217,6 @@ Each server has a database that includes only ble devices. An entry (description
 Upon having filtered the initial list of pairs, the Cell of Origin (CoO) technique is applied by verifying which of the devices produced a stronger signal on the receptor. Upon obtaining the closest device an answer is sent to the application containing all of the information associated to the server and the selected device.
 
 
-%- Describe the Database ( insert image example of database with a few entries?? )
-
-%- Mention capability to Insert aditional info, at the moment it displays geocoding on pop up menu in figure ~\ref{fig:AppMenu}.
-
-
-
 \subsection{ Application}
 \label{subsec:app}
 
@@ -245,19 +231,17 @@ The Mock Location Provider is implemenented as if it was a Location provider, su
 	\label{fig:MockProvider}
 \end{figure}
 
-The Mock Location Provider incorporates the first three steps present in figure ~\ref{fig:MockProvider}, which will now be explored individualy. The first step indicates the gathering of information of the surroundings of the user's device. When a request is made to the provider, a scan for nearby bluetooth low energy devices is made which will put the smartphone in a state of listening for incoming ble advertisement packets for half a second ( NEED TO VERIFY VALUE AND JUSTIFY, THERE WAS A PAPER ON THIS TODO). During this scanning period, each time a device is found, the advertisement is registered in a list, which have a duplication prevention mechanism implemented. Once the period is over, the provider has avaliable a list of all the ble devices within range.   
+The Mock Location Provider incorporates the first three steps present in figure ~\ref{fig:MockProvider}, which will now be explored individualy. The first step indicates the gathering of information of the surroundings of the user's device. When a request is made to the provider, a scan for nearby bluetooth low energy devices is made which will put the smartphone in a state of listening for incoming ble advertisement packets. During this scanning period, each time a device is found, the advertisement is registered in a list, which have a duplication prevention mechanism implemented. Once the period is over, the provider has avaliable a list of all the ble devices within range.   
 
 The second step involves taking the created list of devices, obtain a server adress and forward the same list to it. Once the first step is completed, the provider will analyze each entry at a time. For each device the provider will attempt to respond to the caught advertisement packet, resulting in a created connection.  Once the connection is created the provider asks for the available services of the paired device. Upon receiving an answer, the list of services is swoop while looking for the service with the wanted UUID. If the device doesn't have the UUID that the provider is looking for, it can assume that the paired ble is not a beacon of our system, as such the connection is terminated. When the provider identifies that the device has the system's UUID, it requests the device to provide the service's existant characteristics. The provider will receive a list composed of the service's characteristics and it will search in it for the system's characteristics UUID, the one which contains the device's server's address. This search has the objective of confirming that the service existant in this device is indeed the one that was implemented for the system and not a device with another service that happened to have the same UUID. For any service outside those that are documented in the Bluetooth Special Interest Group (SIG), who have a specific UUID attached to them, the UUID is generated randomly and as such there is a small chance of collision. Once the wanted characteristic is found, the provider requests the device to read its value and stores the received value in a list. This list will contain the servers of the devices that were found, and for each address there will be a list corresponding to each device , and their corresponding rssi values, from the same owner. In order to quicken the previously described process, the provider keeps in cache the most recent contacted devices. Before attempting a connection, the provider confirms that the device isn't found in cache and when finishing a process, the associated device is inserted into the cache.
 
-When every device has been contacted, a voting system is actioned which will decide from the list of servers which one it will send the collected information to. The voting system uses an exponential function in order to attribute a weight to each server. %INSERT FUNCTION AND EXPLAINATION.
+When every device has been contacted, a voting system is actioned which will decide from the list of servers which one it will send the collected information to. The voting system uses an exponential function in order to attribute a weight to each server. 
+
+%INSERT FUNCTION AND EXPLAINATION.
 
 The voting system was implemented with the objective providing a thin security layer by allowing multiple devices of the same server to overcome a single attacker's device which happened to be close to the user. After obtaining each server's values, the one with the highest value is chosen and sent the list with all the devices. 
 
 The Third step involves a simple client/server tcp interaction. The application starts off by formulating the message that it will later on send to the server, this message includes all pairs of device mac address and its associated rssi value captured by the application on the first step. Once the message is computed, the application attemps to create a connection with the server at the chosen address at the end of step two. With the connection established, the message is forwarded to the server and the application is put onto blocked state where it awaits for an answer. Upon arrival, the answer received is checked for valid location, its information is process and the connection is terminated. The information contained inside the received message, which was described in section ~\ref{subsec:server}, is then processed into the adequate class capable of storing a geographic location and the same is broadcasted from the mock location provider to its listener. 
-
-
-
-One of the current limitations of the android API that deals with BLE is that the interface on the smartphone that is used to connect with a device has a fixed timeout time.  MIGHT JUST NEED TO BE IMPROVED TODO
 
 
 The Google Maps Integrated display is implemented using the Google Maps Android API. By using Google Maps it was possible to aliviate the weight on application since there wasn't need implement file transfer of indoor building's maps from each dedicated server to each request, which aliviated the servers aswell since there was no need to store its associated building's maps on it. Managing the maps was something that was aswell fortunately unnecessary and as such all these features were provided by google maps service. By making this development choice, the system as whole became closer to the desired generic approach while making possible for seamless transition between indoor/outdoor maps. The only imposed restriction is related to the addiction of new indoor maps onto the google maps, which is possible and well documented but dependent on a third party.
@@ -294,8 +278,6 @@ The final state of the implemented system can be visualized in figure ~\ref{fig:
 
 - Energy consumption vs Cycle time vs Accuracy?
 
-- Location Accuracy
-
 - Time for request completion
 
 - Data Requiremnts?
@@ -305,8 +287,6 @@ The final state of the implemented system can be visualized in figure ~\ref{fig:
 
 \section{Future Work}
 \label{sec:future}
-
-- Possible Improvement: Paralel ble connections; Improvements on lateration algorithm;  Rest depends on the Performance results
 
 - Conclusions
 
