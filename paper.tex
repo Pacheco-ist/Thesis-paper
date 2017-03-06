@@ -49,9 +49,6 @@ In order to understand indoor position there is a need to understand the full sc
 
 With the evolution of mobile devices there has been a sizeable number of different technologies that can possibly be used in indoor locationing \cite{surveythesis,survey2} such as GPS-based technologies, using high sensitivity antenas to overcome GPS's indoor issues, RFID , Wireless LAN and Bluetooth among others, allowing even for hibrid systems which make use of more than one of the technologies mentioned above. 
 
-%% ADD Generic Problems (i.e. using smartphone)
-%  3 vectors: technology (beacons) , loc description , loc calculation
-
 We are now in an era dominated by smartphones and as such they have became the central piece of several indoor location system. Smartphone's evolution allowed for developing system which rely on its sensors and processing capacities to present a solution which isn't dependant on specific hardware. With such a dependancy, the first condition that is imposed onto the systems is the compatibility with smartphones, i.e. the required sensors needs to exist on the generic hardware of smartphones. Once this barrier is surpassed, these generic system's are immediately faced with three fundamental questions which will define the architecture of the system and which can be seen on figure \ref{fig:choices}. The first question, Technology, defines the technology which is to be used in conjunction with the smartphone and consequently the way that location data is to be collected. There is a wide range of possibilities for this choice, be it BLE beacons, Wi-Fi Access points, LED lamps or just the microphone for sound collection, and each has an impact on the way that the system functions and on its performance. The second question is the location algorithm, which fundamentally depends on the target requirements of the system, if it's required to provide accurate location of a user or if a more descriptive location, such as the room in which the user is located, is enough. The third and last question is about which way will the location be described, with the existant possibilities having previously been presented. 
 
 \begin{figure}[htp]
@@ -63,7 +60,6 @@ We are now in an era dominated by smartphones and as such they have became the c
 
 When taking into consideration every possible technology and existant algorithm that are capable of being applied on indoor location, we find ourselves with a wide variaty of solutions. This high number of variations has led to an increase on the number of existing surveys which attemp to gather make a collection of what has been achieved in the field. Looking at this opportunity one saw the possibility of attempting to create a generic platform capable of being utilized by any existing indoor location system. In order to implement and test the solution there was a need to decide on which technology to be used and as such one opted by the bluetooth low energy.
 
-% Describe generic solution
 The Idealized generic architecture , which can be seen on figure \ref{fig:generic}, was created with the intention of providing a common ground for any systems which planned to have an indoor location based on a smartphone, which allows interoperability among those who make use of it, while presenting a way to structure the system so that the impact on the smartphone is reduced. If one analyses it according to the three points presented in figure \ref{fig:choices}, one can say that by having dedicated serves for the location computation and the location description instead of having it locally on the smartphone, interoperability is highly improved. This setup allows for systems to implement whichever algorithm they intent for as long as the server is capable of distinguishing which algorithm is to be used, responsability which is passed onto the smartphone. In scenarios of interoperability, the smartphone should be able to use any of its sensors to capture data, dealing with the technology component, and tag them before sending it for computation on the server. The location description is contained on the map server and it is up to the system to choose which one to utilise, be it self-created or owned by a third party such as google maps or openstreet maps. For as long as the smartphone is aware of the type of location that he is to receive, interoperability should be achieved.
 
 \begin{figure}
@@ -81,7 +77,6 @@ This paper is structured in a way that in \ref{sec:related} an overview of exist
 \section{Related Word}
 \label{sec:related}
 
-%into
 In this chapter one will first analyse the systems that layed the foundations of indoor location systems in section \ref{subsec:dedicated}, in order to study systems that were fully dependant on having specific hardware for obtaining user location. Section \ref{subsec:gentech} will present the technlogies that are compatible with modern day smartphones, analyse its pros and cons and mention existant projects based on them. The following section, \ref{subsec:technique} will describe the existent ways of obtaining the data that is required for infering a user's location as well as the techniques that make use of them. To conclude, on section \ref{subsec:desciption}, one will present the existent ways of describing locations through system that make use of them.
 
 \subsection{Dedicated Technologies}
@@ -136,8 +131,24 @@ Another method is to consider the indoor map as the reference and utilise a cart
 
 Although Meridian already provides some extra level of detail in comparison with google indoor maps, there is another example that should be mentioned called OpenStreetMaps. Although it started much like google, providing global data, due to its openness, many indoor projects surfaced such as OpenLevelUP \cite{openlevel}. This project makes use of OpenStreetMaps' current indoor tagging scheme \cite{opentagging}, which is intented to describe in the most complete and simple way a building. This makes available the number of floors, the type of elemets (room, wall, corridor, etc) and its connectors, like doors and escalators or elevators, allowing to understand clearly the map that is being analysed.
 
-\section{Architecture}
-\label{sec:architecture}
+\section{GEFILOC}
+\label{sec:system}
+
+% Resume
+
+\subsection{Deployment environment}
+\label{subsec:deployment}
+
+In order to understand how a system based on this generic architecture, figure \ref{fig:generic} has to be strutured, it is of relevance to analyse the system component's description and requirements that would allow it to be deployed. If one starts by analysing the beacons component, one can describe them as the reference points of the system which are in charge of providing nearby users with information relative to their surroundings. These beacons are always ready and available to the users and upon being contacted, they should inform the smartphone which has initiated the communication of the address of the beacon's associated location server. Since the beacon only communicates with the smartphone, it isn't required to have any other communication capacity other than that specific to its technology. The last requirement is that the beacon needs to be uniquely identified and have the address of its associated server, while being capable of transmitting that same information to the smartphone.
+
+The smartphone service is the component that is in charge of communicating with both the beacons and the location server. This service is a software component of the smartphone application which is available to being called when a location is requested. Once a location is requested by the application, the service should communicate with nearby beacons through one of its sensors. A service is associated with one and only one technology, as such if the application is to support more than one technlogy, multiple services should be implemented. This condition is relevant since the required sensor depends on the chosen technology and because it allows the service to quickly associate the data that it is collecting with the technology, information which must be delivered to the location server. Once the beacon data has been collected, the same data is forwarded to the beacon's associated server, together with a tag representing the technology of the beacons. Upon obtaining a location, the service should forward the data to the application, which is responsible of later communicating with the map server. In terms of requirements, the service needs to have Wi-Fi or at least 3G available for communicating with both the location and maps server, and access to the sensor required to communicate with the nearby beacon, for BLE it would be the bluetooth antenna or for QR it would be the camera.
+
+The Location server should have a database of all the devices associated to it, each with its exact location of the map. This location is dependent on the method for location description chosen, i.e. latitude/longitude or x/y. The server should also be able to take input from any of the supported technologies, depends on the beacons in the database, in order to output the user's location. From this description one can define the requirements of the location server as having in storage the beacons that are associated it as well as their location, being capable of communicating with the smartphone application and being in accordance with the map server, achieved through providing location description that is the same as that present in the maps server.
+
+The Map server is responsible for providing the application with the maps that it has requested. The only decision concerning this server is the type of location description that is to be used and consequently the only requirement is that it has to be in accordance with the information on the location server.
+
+\subsection{Architecture}
+\label{subsec:architecture}
 
 The solution presented in this paper was made with the objective of creating a generic indoor location system capable of being implemented using any existant indoor system created. The generic system's architecture is presented in figure ~\ref{fig:generic} and it's divided in 4 parts: beacon, location server, map server and smartphone application. 
 
@@ -153,11 +164,19 @@ The smartphone application is the central piece of this architecture. It is resp
 The presented architecture was structured in a way that it is scalable and it allowed for interoperability. The idea behind such an architecture would be let different indoor building use their own version of the system but a user with the associated smartphone application would be able to transit between buildings and use the readily available beacons to always obtain its location. This would be achieved through a common architecture that allowed for self-contained implementations that could be access through a generic smartphone application. In order to analyse this assumption it is necessary to look back on the already analysed figure \ref{fig:choices}, which represents the main components of an indoor systems. This architecture is capable of externalizing from the smartphone component all the remaining. By making the smartphone the central piece of communication, the beacons are required to the ones to provide location data. By having a server dedicated to computing the location of an user, the system developers are allowed to use whichever algorithm they wish, since there is no dependency to the application. They are also the only ones responsible for having the beacon associated data, for giving those same beacons the location of its server and for computing a location that is in accordance with how they wish to store their maps on the maps server. The last remaining component is the location description which is completely passed onto the map server and whose only requirement is for it to be in accordance with its associated location server, in terms of location description.
 
 
-\section{Implementation}
+\subsection{Implementation}
 \label{sec:struture}
 
+The implementation presented in this paper was created by utilizing the generic indoor location system presented in section \ref{sec:architecture} and applying it with bluetooth low energy. The system's architecture is presented in figure ~\ref{fig:implementation} and is divided three parts: the bluetooth low energy device, in section ~\ref{subsec:beacon} a description of the used technologies and the changes made are present;the server, whose funcionalities and stored information are described in section ~\ref{subsec:server}; and the smartphone application, whose process is described in section ~\ref{subsec:app} alongside figures that show the functional prototype. For each of these parts an explanation will be given, containing a description of each of its components specific to the presented system alongside the requirements for each to work.
 
-\subsection{Bluetooth Low energy}
+\begin{figure}
+	\centering
+		\includegraphics[width=1\linewidth]{figures/implementation.png}
+	\caption[System's Architecture]{System's Architecture}
+	\label{fig:implementation}
+\end{figure}
+
+\subsubsection{Bluetooth Low energy}
 \label{ble}
 
 When looking at the BLE's architecture , which can be seen at \ref{fig:BLEarchitecture}, the Generic Access Profile (GAP) is one of the most relevant since it's responsible for working in conjunction with Generic Attribute (GATT) to define the base funcionality of BLE devices. The services that are made available by the GAP are: BLE device discovery, connection modes, security, authentication, association models and service discovery.
@@ -185,16 +204,7 @@ A profile is composed by one or more services. A service is a collection of data
 A Characteristic is a value that is used in a service that has properties and configuration information that descrive how the value should be accessed as well as information on how to display the value. A characteristic is defined by its declaration, its properties, its value and may also be defined by its descriptor, which describes the value or permit configuration of the server relative to the value.
 
 
-The implementation presented in this paper was created by utilizing the generic indoor location system presented in section \ref{sec:architecture} and applying it with bluetooth low energy. The system's architecture is presented in figure ~\ref{fig:implementation} and is divided three parts: the bluetooth low energy device, in section ~\ref{subsec:beacon} a description of the used technologies and the changes made are present;the server, whose funcionalities and stored information are described in section ~\ref{subsec:server}; and the smartphone application, whose process is described in section ~\ref{subsec:app} alongside figures that show the functional prototype. For each of these parts an explanation will be given, containing a description of each of its components specific to the presented system alongside the requirements for each to work.
-
-\begin{figure}
-	\centering
-		\includegraphics[width=1\linewidth]{figures/implementation.png}
-	\caption[System's Architecture]{System's Architecture}
-	\label{fig:implementation}
-\end{figure}
-
-\subsection{ BLE beacon}
+\subsubsection{ BLE beacon}
 \label{subsec:beacon}
 
 The beacons that were utilized are Texas Instruments CC2650STK devices which can be visualized in figure ~\ref{fig:beacon}. Alongside the device, which comes with a pre-installed bluetooth low energy program capable of giving information on each of its ten sensors through its predefined profiles, there is a texas smartphone application that can connect to a single device and read from its sensors. By using the texas Code Composer Studio (CSS), the pre-defined ble profile existant on the device could be altered. Upon further analysis of the profile, a characteristic was found for which the Universal Unique Identifier (UUID) of the service and the characteristic itself was found and as such this was the one that ended up being used to store the device's owner server's address. Since the device was already set to work as a pheripheral and it now stored the information relevant to the system, there was no need to do further work.
@@ -206,8 +216,11 @@ The beacons that were utilized are Texas Instruments CC2650STK devices which can
 	\label{fig:beacon}
 \end{figure}
 
+\subsubsection{ Smartphone service}
+\label{subsec:service}
 
-\subsection{ Server}
+
+\subsubsection{ Server}
 \label{subsec:server}
 
 The webserver was implement in Python 3 programming language. The program implements a simple tcp server capable of receiving multiple request at the same time. Each request starts with information sent from an application which include a pair of MAC address and associated RSSI value for each ble device that the same application found. Afterwards the list of pairs is filtered in order to remove any existant devices that are not present in the server's database of devices.
@@ -216,9 +229,8 @@ Each server has a database that includes only ble devices. An entry (description
 
 Upon having filtered the initial list of pairs, the Cell of Origin (CoO) technique is applied by verifying which of the devices produced a stronger signal on the receptor. Upon obtaining the closest device an answer is sent to the application containing all of the information associated to the server and the selected device.
 
-
-\subsection{ Application}
-\label{subsec:app}
+\subsection{Evaluation}
+\label{sec:eval}
 
 The Smartphone application was developed for Android using the Android Studio IDE. The Application is divided in two primary functional blocks, the Mock location Provider and the Google Maps Integrated Display, as can be visualized in figure ~\ref{fig:implementation}.
 
@@ -268,11 +280,8 @@ The final state of the implemented system can be visualized in figure ~\ref{fig:
 
 
 
-
-
-
-\section{Performance Analysis}
-\label{sec:performance}
+%% Qualitativamente 
+%% graficos e tal
 
 - Energy Consumption in general
 
@@ -283,7 +292,13 @@ The final state of the implemented system can be visualized in figure ~\ref{fig:
 - Data Requiremnts?
  
 
+%% Qualitativamente
 
+Although a complete implementation of the proposed architecture was achieved for BLE, one must indicate the required changes that would be necessary to make when change one or several parts of the system. The parts that can be changed are the three possibilities previously studied from figure \ref{fig:choices}. In case the technlogy is to be change, we will use QR code as an example, the affected areas are the beacons, the smartphone service and the location server. By changing the to QR code, the technology changes instantly as there is no more requirement for BLE beacons but instead there will be QR codes placed in fixed places. Each QR code would be required contain information about its associated server. The service would change the mechanism utilised to collect data, instead of listening for BLE beacons through its bluetooth antenna, it will open up the camera, so that the user can capture the QR code which would then be forwarded to the location server. The location server would have to be prepared for receiving the QR data and obtaining the location relative to that QR code.
+
+If the system were to be changed on the location algorithm component, this would only require changes on the location server. The algorithms connection has only two connections points with the system, the data that it receives and the location it outputs. As such, for as long as the new algorithm makes use of the same data and in the end, once it has concluded, it outputs one location of the same format, no other issue should surface.
+
+A modification on the location description utilised would have an impact on both the location and map server. With such a request, the map server is required to change completely the stored maps in order to support the new description method, while the changes on the location server are on the database, since the location of the beacons should change, and on the way the location algorithm processes these same locations.  
 
 \section{Future Work}
 \label{sec:future}
