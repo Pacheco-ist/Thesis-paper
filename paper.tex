@@ -167,7 +167,7 @@ The presented architecture was structured in a way that it is scalable and it al
 \subsection{Implementation}
 \label{sec:struture}
 
-The implementation presented in this paper was created by utilizing the generic indoor location system presented in section \ref{sec:architecture} and applying it with bluetooth low energy. The system's architecture is presented in figure ~\ref{fig:implementation} and is divided three parts: the bluetooth low energy device, in section ~\ref{subsec:beacon} a description of the used technologies and the changes made are present;the server, whose funcionalities and stored information are described in section ~\ref{subsec:server}; and the smartphone application, whose process is described in section ~\ref{subsec:app} alongside figures that show the functional prototype. For each of these parts an explanation will be given, containing a description of each of its components specific to the presented system alongside the requirements for each to work.
+The implementation presented in this paper was created by utilizing the generic indoor location system presented in section \ref{subsec:architecture} and applying it with bluetooth low energy. The system's architecture is presented in figure ~\ref{fig:implementation} and is divided three parts: the bluetooth low energy device, in section ~\ref{subsec:beacon} a description of the used technologies and the changes made are present;the server, whose funcionalities and stored information are described in section ~\ref{subsec:server}; and the smartphone application, whose process is described in section ~\ref{subsec:service} alongside figures that show the functional prototype. For each of these parts an explanation will be given, containing a description of each of its components specific to the presented system alongside the requirements for each to work.
 
 \begin{figure}
 	\centering
@@ -177,7 +177,7 @@ The implementation presented in this paper was created by utilizing the generic 
 \end{figure}
 
 \subsubsection{Bluetooth Low energy}
-\label{ble}
+\label{subsec:ble}
 
 When looking at the BLE's architecture , which can be seen at \ref{fig:BLEarchitecture}, the Generic Access Profile (GAP) is one of the most relevant since it's responsible for working in conjunction with Generic Attribute (GATT) to define the base funcionality of BLE devices. The services that are made available by the GAP are: BLE device discovery, connection modes, security, authentication, association models and service discovery.
 In addiction to this, it also defines four different roles to describe a device, allowing for the controllers to be optimized in funtion of the device's desired roles: 
@@ -219,19 +219,6 @@ The beacons that were utilized are Texas Instruments CC2650STK devices which can
 \subsubsection{ Smartphone service}
 \label{subsec:service}
 
-
-\subsubsection{ Server}
-\label{subsec:server}
-
-The webserver was implement in Python 3 programming language. The program implements a simple tcp server capable of receiving multiple request at the same time. Each request starts with information sent from an application which include a pair of MAC address and associated RSSI value for each ble device that the same application found. Afterwards the list of pairs is filtered in order to remove any existant devices that are not present in the server's database of devices.
-
-Each server has a database that includes only ble devices. An entry (description of a device) in this database is composed by the device's mac address, its longitude and latitude and its building, floor and room name. In addition to the database, a server when initiated can store additional location info such as the server's street, number, zipcode, city and country, allowing this information to be transmited to the client in order to offer an additional level of location description to the user. The whole location specific information can be visualised in figure ~\ref{fig:AppMenu}.
-
-Upon having filtered the initial list of pairs, the Cell of Origin (CoO) technique is applied by verifying which of the devices produced a stronger signal on the receptor. Upon obtaining the closest device an answer is sent to the application containing all of the information associated to the server and the selected device.
-
-\subsection{Evaluation}
-\label{sec:eval}
-
 The Smartphone application was developed for Android using the Android Studio IDE. The Application is divided in two primary functional blocks, the Mock location Provider and the Google Maps Integrated Display, as can be visualized in figure ~\ref{fig:implementation}.
 
 The Mock Location Provider is implemenented as if it was a Location provider, such as gps. The application functions works as a listener to a Location provider, in this case it listens to the Mock Provider that was implemented. By implementing the whole process of obtaining a location inside a service (the mock provider) , a new level of abstraction is added to the application. As such, whenever the application is signaled to obtain the user's current location, a request is made to the associated location provider and the application only need to listen for the answer that eventualy arrives.
@@ -259,6 +246,20 @@ The Third step involves a simple client/server tcp interaction. The application 
 The Google Maps Integrated display is implemented using the Google Maps Android API. By using Google Maps it was possible to aliviate the weight on application since there wasn't need implement file transfer of indoor building's maps from each dedicated server to each request, which aliviated the servers aswell since there was no need to store its associated building's maps on it. Managing the maps was something that was aswell fortunately unnecessary and as such all these features were provided by google maps service. By making this development choice, the system as whole became closer to the desired generic approach while making possible for seamless transition between indoor/outdoor maps. The only imposed restriction is related to the addiction of new indoor maps onto the google maps, which is possible and well documented but dependent on a third party.
 
 The Fourth step is called when the application receives a proper location from the request made onto the location provider. With the device's location known, a marker is placed on the map with the obtain coordinates (longitude, latitude), the camera is moved in order to be centralized on the position and fully displaying the indoor level map, and the menu visible on figure ~\ref{AppMenu} is updated with the information that is bundled with the received location. In order to show the correct level on a multi level building, the "floor" information present in the menu is utilized. The API allows for obtaining a list of existant levels on which the maps' camera is focused and as such it's possible to find out to which level the provided locaiton belongs and make so that the application shows it.
+
+
+\subsubsection{ Server}
+\label{subsec:server}
+
+The webserver was implement in Python 3 programming language. The program implements a simple tcp server capable of receiving multiple request at the same time. Each request starts with information sent from an application which include a pair of MAC address and associated RSSI value for each ble device that the same application found. Afterwards the list of pairs is filtered in order to remove any existant devices that are not present in the server's database of devices.
+
+Each server has a database that includes only ble devices. An entry (description of a device) in this database is composed by the device's mac address, its longitude and latitude and its building, floor and room name. In addition to the database, a server when initiated can store additional location info such as the server's street, number, zipcode, city and country, allowing this information to be transmited to the client in order to offer an additional level of location description to the user. The whole location specific information can be visualised in figure ~\ref{fig:AppMenu}.
+
+Upon having filtered the initial list of pairs, the Cell of Origin (CoO) technique is applied by verifying which of the devices produced a stronger signal on the receptor. Upon obtaining the closest device an answer is sent to the application containing all of the information associated to the server and the selected device.
+
+\subsection{Evaluation}
+\label{sec:eval}
+
 
 The pop-up menu was implemented to demonstrate the capacity of providing additional information associated with each location, be it geo-location taxonomy as it is currently implemented or possibly a description of the located room, an hyperlink of some sort or any other type of data that someone implemented this system would like to provide to its users.  
 
